@@ -7,6 +7,6 @@
     "strict": true
   },
   "include": [
-    "./index.ts"
+    "node_modules/bamfstore/index.ts"
   ]
 }
