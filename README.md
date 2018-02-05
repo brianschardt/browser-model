@@ -9,6 +9,8 @@ This is made to access and store data in the browser that is easily retrieved fr
 It stores the data as a json string in the browser, and then queries and parses it to retrieve the data. This helps eliminate the need for redundant Http requests, and also complex ways of storing and retrieving data.
 This uses already familiar known backend language. 
 
+If you refresh the browser the data still exists inside, and is easily retrievable. Pretty awesome!
+
 ### Example Model
 ```
 import { Model } from 'bamfstore';
@@ -33,11 +35,8 @@ export class User extends Model {
 ### Example Component
 ```
 ngOnInit() {
-      this.util.use();
-      this.userService.use();
 
-      App.describe();
-      User.removeAllData();
+      User.removeAllData();//this deletes local storage
       let user1 = User.findOneAndUpdate({first:'Miranda', last:'Bashore'}, {}, {upsert:true});
       let user2 = User.findOneAndUpdate({first:'Brian', last:"schardt"},{}, {upsert:true});
 
