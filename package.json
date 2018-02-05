@@ -1,6 +1,6 @@
 {
   "name": "bamfstore",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Easy Data Component Transfer",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

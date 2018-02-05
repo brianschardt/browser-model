@@ -4,6 +4,8 @@ export declare class Model {
     static SCHEMA: Object;
     constructor();
     getModelName(): any;
+    toObject(): any;
+    save(): void;
     static describe(): Array<string>;
     static setlocalStorage(name: string, data: Object): void;
     static getlocalStorage(name: string): Object;

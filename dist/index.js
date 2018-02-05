@@ -7,6 +7,23 @@ var Model = /** @class */ (function () {
     Model.prototype.getModelName = function () {
         return this.constructor.getModelName();
     };
+    Model.prototype.toObject = function () {
+        var properties = Object.getOwnPropertyNames(this);
+        var obj = {};
+        for (var i in properties) {
+            var property = properties[i];
+            obj[property] = this[property];
+        }
+        return obj;
+    };
+    Model.prototype.save = function () {
+        var primary_id = this.constructor.getPrimaryKey();
+        var query_obj = {};
+        query_obj[primary_id] = this[primary_id];
+        var update_object = this.toObject();
+        this.constructor.updateOne(query_obj, update_object);
+        // return (this.constructor as any).instantiateObject(update_object);
+    };
     //Static
     Model.describe = function () {
         var properties = Object.getOwnPropertyNames(this);

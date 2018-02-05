@@ -15,6 +15,24 @@ export class Model{
     }
 
 
+    toObject(){
+        let properties = Object.getOwnPropertyNames(this);
+        let obj:any = {};
+        for ( let i in properties){
+            let property:any = properties[i];
+            obj[property] = (<any> this)[property]
+        }
+
+        return obj
+    }
+    save(){
+        let primary_id = (this.constructor as any).getPrimaryKey();
+        let query_obj:any = {};
+        query_obj[primary_id] = (<any> this)[primary_id];
+        let update_object = this.toObject();
+        (this.constructor as any).updateOne(query_obj, update_object);
+        // return (this.constructor as any).instantiateObject(update_object);
+    }
     //Static
     static describe(): Array<string> {
         let properties = Object.getOwnPropertyNames(this);
