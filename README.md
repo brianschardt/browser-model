@@ -10,7 +10,8 @@ It stores the data as a json string in the browser, and then queries and parses 
 This uses already familiar known backend language. 
 
 ### Example Model
-```import { Model } from 'bamfstore';
+```
+import { Model } from 'bamfstore';
 
 export class User extends Model {
     first;
@@ -26,10 +27,12 @@ export class User extends Model {
         return this.first + ' ' + this.last;
     }
 
-}```
+}
+```
 
 ### Example Component
-```ngOnInit() {
+```
+ngOnInit() {
       this.util.use();
       this.userService.use();
 
@@ -40,4 +43,5 @@ export class User extends Model {
 
       console.log('user1', user1.fullname());
       console.log('user2', user2.fullname());
-  }```
+  }
+  ```
