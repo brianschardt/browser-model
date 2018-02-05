@@ -54,16 +54,42 @@ ngOnInit() {
   ```
   
   # Instance Methods
-  ### save
-  
-  ### toObject
-  
+  ## save
+  saves instance in web storage
+  ```
+  let company = Company.findOne({name:'facebook'});
+  company.value = 500;
+  company.save()
+  ```
+  ## remove
+  Removes objkect from web storage
+  ```
+  let company = Company.findOne({name:'facebook'});
+  company.remove()
+  ```
+  ## toObject
+  converts model to Javascript Object
+  ```
+  let company = Company.findOne({name:'facebook'});
+  obj = company.toObject();
+  ```
   # Static Methods
-  ### create
-  ### remove
-  ### update
-  ### updateOne
-  ### find
-  ### findOne
-  ### findOneAndUpdate
-  ### findById
+  ## create
+  creates new Instance of model
+  ```
+  let company = Company.create({name:'google', value:'600'})
+  ```
+  ## remove
+  Removes all instances with the given value from web storage
+  ```
+  Company.remove({name:'microsoft'})
+  ```
+  ## update
+  ```
+  Company.update({value:500}, {name:'Orange'});
+  ```
+  ## updateOne
+  ## find
+  ## findOne
+  ## findOneAndUpdate
+  ## findById
