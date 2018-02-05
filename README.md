@@ -53,44 +53,44 @@ ngOnInit() {
 }
 ```
 
-# Instance Methods
-## save
+## Instance Methods
+### save
 saves instance in web storage
 ```
 let company = Company.findOne({name:'facebook'});
 company.value = 500;
 company.save()
 ```
-## remove
+### remove
 Removes objkect from web storage
 ```
 let company = Company.findOne({name:'facebook'});
 company.remove()
 ```
-## toObject
+### toObject
 converts model to Javascript Object
 ```
 let company = Company.findOne({name:'facebook'});
 obj = company.toObject();
 ```
-# Static Methods
-## create
+## Static Methods
+### create
 creates new Instance of model
 ```
 let company = Company.create({name:'google', value:'600'})
 ```
-## remove
+### remove
 Removes all instances with the given value from web storage
 ```
 Company.remove({name:'microsoft'})
 ```
-## update
+### update
 Updates all instances with given value in web storage
 Company.update([query params], [new_data])
 ```
 Company.update({value:500}, {name:'Orange'});
 ```
-## updateOne
+### updateOne
 Updates one instances with given value in web storage
 Company.update([query params], [new_data])
 ```
@@ -101,17 +101,17 @@ returns an array of company instances with given value from web storage
 ```
 let companies = Company.find({value:500});
 ```
-## findOne
+### findOne
 returns an instance with given value from web storage
 ```
 let company = Company.findOne({value:500});
 ```
-## findOneAndUpdate
+### findOneAndUpdate
 Searches web storage for instance and then updates it. if option upsert is set to true, if it doesn't find the instance with the given object in web storage, it will create it.
 ```
 let user1 = User.findOneAndUpdate({first:'Scott', last:'Thomas'}, {}, {upsert:true});
 ```
-## findById
+### findById
 returns once instance with given id in webstorage
 ```
 let user1 = User.findById(2);
