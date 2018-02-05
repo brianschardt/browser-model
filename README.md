@@ -1,8 +1,10 @@
 # Bamf-Store
-Model Storage System Angular 2+ ng*
+Model Storage System Angular 2+ NG*
 
 ## Installation
+```
 npm i bamfstore
+```
 
 ## Purpose
 This is made to access and store data in the browser that is easily retrieved from different components in Angular. This is very similar to a model base system like an ODM. the syntax is very similar to mongoose.
@@ -34,13 +36,34 @@ export class User extends Model {
 
 ### Example Component
 ```
+import { User } from './../models/user.model';
+
 ngOnInit() {
 
-      User.removeAllData();//this deletes local storage
-      let user1 = User.findOneAndUpdate({first:'Miranda', last:'Bashore'}, {}, {upsert:true});
-      let user2 = User.findOneAndUpdate({first:'Brian', last:"schardt"},{}, {upsert:true});
+      let user1 = User.findOneAndUpdate({first:'Scott', last:'Thomas'}, {}, {upsert:true});
+      let user2 = User.findOneAndUpdate({first:'Brian', last:"Alois"},{}, {upsert:true});
 
       console.log('user1', user1.fullname());
       console.log('user2', user2.fullname());
+      
+      user1.first = 'Jordan';
+      user1.save();
+      
+      console.log('user1', user1.fullname());
   }
   ```
+  
+  # Instance Methods
+  ### save
+  
+  ### toObject
+  
+  # Static Methods
+  ### create
+  ### remove
+  ### update
+  ### updateOne
+  ### find
+  ### findOne
+  ### findOneAndUpdate
+  ### findById
