@@ -5,9 +5,5 @@
     "declaration": true,
     "outDir": "./dist",
     "strict": true
-  },
-  "include": [
-    "**/*.ts",
-    "node_modules/bamfstore/index.ts"
-  ]
+  }
 }
