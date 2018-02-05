@@ -96,7 +96,7 @@ Company.update([query params], [new_data])
 ```
 Company.updateOne({value:500}, {name:'Orange'});
 ```
-## find
+### find
 returns an array of company instances with given value from web storage
 ```
 let companies = Company.find({value:500});
