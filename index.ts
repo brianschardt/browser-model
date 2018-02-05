@@ -25,13 +25,23 @@ export class Model{
 
         return obj
     }
-    save(){
+
+    uniqueQueryIdentifier(){
         let primary_id = (this.constructor as any).getPrimaryKey();
         let query_obj:any = {};
         query_obj[primary_id] = (<any> this)[primary_id];
+        return query_obj;
+    }
+    save(){
+        let query_obj = this.uniqueQueryIdentifier();
         let update_object = this.toObject();
         (this.constructor as any).updateOne(query_obj, update_object);
         // return (this.constructor as any).instantiateObject(update_object);
+    }
+
+    remove(){
+        let query_obj = this.uniqueQueryIdentifier();
+        (this.constructor as any).remove(query_obj);
     }
     //Static
     static describe(): Array<string> {

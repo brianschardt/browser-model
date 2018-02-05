@@ -5,7 +5,9 @@ export declare class Model {
     constructor();
     getModelName(): any;
     toObject(): any;
+    uniqueQueryIdentifier(): any;
     save(): void;
+    remove(): void;
     static describe(): Array<string>;
     static setlocalStorage(name: string, data: Object): void;
     static getlocalStorage(name: string): Object;

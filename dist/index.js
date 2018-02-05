@@ -16,13 +16,21 @@ var Model = /** @class */ (function () {
         }
         return obj;
     };
-    Model.prototype.save = function () {
+    Model.prototype.uniqueQueryIdentifier = function () {
         var primary_id = this.constructor.getPrimaryKey();
         var query_obj = {};
         query_obj[primary_id] = this[primary_id];
+        return query_obj;
+    };
+    Model.prototype.save = function () {
+        var query_obj = this.uniqueQueryIdentifier();
         var update_object = this.toObject();
         this.constructor.updateOne(query_obj, update_object);
         // return (this.constructor as any).instantiateObject(update_object);
+    };
+    Model.prototype.remove = function () {
+        var query_obj = this.uniqueQueryIdentifier();
+        this.constructor.remove(query_obj);
     };
     //Static
     Model.describe = function () {
