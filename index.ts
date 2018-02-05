@@ -173,6 +173,20 @@ export class Model{
         return instance;
     }
 
+    static find(search:object){
+        let all_data = this.getAllData();
+        let instances = all_data.filter((data:object)=>{ return _.isMatch(data, search);});
+        let final_objs = instances;
+        let array = []
+        for (let i in final_objs){
+            let instance = final_objs[i];
+            instance = this.instantiateObject(instance)
+            array.push(instance);
+        }
+
+        return array;
+    }
+
     static findOneAndUpdate(search:object, data?:any, options?:any){
         if(typeof search !== 'object'){ console.log('search wrong') }
         let all_data = this.getAllData();

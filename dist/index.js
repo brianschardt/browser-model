@@ -143,6 +143,18 @@ var Model = /** @class */ (function () {
         instance = this.instantiateObject(instance);
         return instance;
     };
+    Model.find = function (search) {
+        var all_data = this.getAllData();
+        var instances = all_data.filter(function (data) { return _.isMatch(data, search); });
+        var final_objs = instances;
+        var array = [];
+        for (var i in final_objs) {
+            var instance = final_objs[i];
+            instance = this.instantiateObject(instance);
+            array.push(instance);
+        }
+        return array;
+    };
     Model.findOneAndUpdate = function (search, data, options) {
         if (typeof search !== 'object') {
             console.log('search wrong');

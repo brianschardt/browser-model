@@ -21,6 +21,7 @@ export declare class Model {
     static update(search: object, new_data?: any): null | undefined;
     static updateOne(search: object, new_data: any): Model | null;
     static findOne(search?: object): Model;
+    static find(search: object): any[];
     static findOneAndUpdate(search: object, data?: any, options?: any): any;
     static findById(id: string): Model;
 }
