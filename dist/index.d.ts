@@ -6,8 +6,14 @@ export declare class Model {
     getModelName(): any;
     toObject(): any;
     uniqueQueryIdentifier(): any;
+    uniqueIdName(): any;
     save(): void;
     remove(): void;
+    getStorageValues(): any;
+    getInstanceValues(): any;
+    getPropertyDifferences(): any;
+    storageDifference(): any;
+    instanceDifference(): any;
     static describe(): Array<string>;
     static setlocalStorage(name: string, data: Object): void;
     static getlocalStorage(name: string): Object;
@@ -24,8 +30,9 @@ export declare class Model {
     static remove(search: object): void;
     static update(search: object, new_data?: any): null | undefined;
     static updateOne(search: object, new_data: any): Model | null;
-    static findOne(search?: object): Model;
+    static findOne(search?: object): Model | null;
     static find(search: object): any[];
     static findOneAndUpdate(search: object, data?: any, options?: any): any;
-    static findById(id: string): Model;
+    static findById(id: string): Model | null;
+    static difference(a: any, b: any): any;
 }

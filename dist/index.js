@@ -22,6 +22,9 @@ var Model = /** @class */ (function () {
         query_obj[primary_id] = this[primary_id];
         return query_obj;
     };
+    Model.prototype.uniqueIdName = function () {
+        return this.constructor.getPrimaryKey();
+    };
     Model.prototype.save = function () {
         var query_obj = this.uniqueQueryIdentifier();
         var update_object = this.toObject();
@@ -31,6 +34,33 @@ var Model = /** @class */ (function () {
     Model.prototype.remove = function () {
         var query_obj = this.uniqueQueryIdentifier();
         this.constructor.remove(query_obj);
+    };
+    Model.prototype.getStorageValues = function () {
+        var name = this.uniqueIdName();
+        var id = this[name];
+        return this.constructor.findById(id).toObject();
+    };
+    Model.prototype.getInstanceValues = function () {
+        return this.toObject();
+    };
+    Model.prototype.getPropertyDifferences = function () {
+        return this.constructor.difference(this.getStorageValues(), this.getInstanceValues());
+    };
+    Model.prototype.storageDifference = function () {
+        var diff = this.getPropertyDifferences();
+        var storage = this.getStorageValues();
+        var storage_differences = _.pick(storage, function (value, key, object) {
+            return diff.includes(key);
+        });
+        return storage_differences;
+    };
+    Model.prototype.instanceDifference = function () {
+        var diff = this.getPropertyDifferences();
+        var instance = this.getInstanceValues();
+        var instance_differences = _.pick(instance, function (value, key, object) {
+            return diff.includes(key);
+        });
+        return instance_differences;
     };
     //Static
     Model.describe = function () {
@@ -165,6 +195,8 @@ var Model = /** @class */ (function () {
         else {
             instance = all_data.filter(function (data) { return _.isMatch(data, search); })[0];
         }
+        if (typeof instance === 'undefined' || !instance)
+            return null;
         instance = this.instantiateObject(instance);
         return instance;
     };
@@ -210,6 +242,12 @@ var Model = /** @class */ (function () {
         var obj = {};
         obj[primary_key] = id;
         return this.findOne(obj);
+    };
+    Model.difference = function (a, b) {
+        return _.reduce(a, function (result, value, key) {
+            return _.isEqual(value, b[key]) ?
+                result : result.concat(key);
+        }, []);
     };
     return Model;
 }());
