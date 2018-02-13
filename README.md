@@ -62,7 +62,7 @@ company.value = 500;
 company.save()
 ```
 ### remove
-Removes objkect from web storage
+Removes object from web storage
 ```
 let company = Company.findOne({name:'facebook'});
 company.remove()
@@ -112,7 +112,7 @@ Searches web storage for instance and then updates it. if option upsert is set t
 let user1 = User.findOneAndUpdate({first:'Scott', last:'Thomas'}, {}, {upsert:true});
 ```
 ### findById
-returns once instance with given id in webstorage
+returns one instance with given id in webstorage
 ```
 let user1 = User.findById(2);
 ```
