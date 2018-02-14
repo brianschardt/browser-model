@@ -44,7 +44,7 @@ var Model = /** @class */ (function () {
         return this.toObject();
     };
     Model.prototype.getPropertyDifferences = function () {
-        return this.constructor.difference(this.getStorageValues(), this.getInstanceValues());
+        return this.constructor.difference(this.getInstanceValues(), this.getStorageValues());
     };
     Model.prototype.storageDifference = function () {
         var diff = this.getPropertyDifferences();
@@ -128,6 +128,9 @@ var Model = /** @class */ (function () {
         for (var key in schema) {
             if (data[key]) {
                 new_data[key] = data[key];
+            }
+            else {
+                new_data[key] = '';
             }
         }
         return new_data;
@@ -244,10 +247,11 @@ var Model = /** @class */ (function () {
         return this.findOne(obj);
     };
     Model.difference = function (a, b) {
-        return _.reduce(a, function (result, value, key) {
+        var diff = _.reduce(a, function (result, value, key) {
             return _.isEqual(value, b[key]) ?
                 result : result.concat(key);
         }, []);
+        return diff;
     };
     return Model;
 }());
