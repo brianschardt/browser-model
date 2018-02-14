@@ -59,7 +59,7 @@ export class Model{
     }
 
     getPropertyDifferences(){
-        return (this.constructor as any).difference(this.getStorageValues(), this.getInstanceValues());
+        return (this.constructor as any).difference(this.getInstanceValues(), this.getStorageValues());
     }
 
     storageDifference(){
@@ -158,6 +158,8 @@ export class Model{
         for ( let key in schema){
             if(data[key]){
                 new_data[key] = data[key]
+            }else{
+                new_data[key] = '';
             }
         }
 
@@ -286,9 +288,11 @@ export class Model{
     }
 
     static difference(a:any, b:any){
-        return _.reduce(a, function(result:any, value:any, key:any) {
+        let diff =  _.reduce(a, function(result:any, value:any, key:any) {
             return _.isEqual(value, b[key]) ?
                 result : result.concat(key);
         }, []);
+
+        return diff;
     }
 }
