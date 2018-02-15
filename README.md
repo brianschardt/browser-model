@@ -15,7 +15,7 @@ If you refresh the browser the data still exists inside, and is easily retrievab
 
 ### Example Model
 ```
-import { Model } from 'bamfstore';
+import { Model } from 'browser-model';
 
 export class User extends Model {
     first;
