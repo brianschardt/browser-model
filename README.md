@@ -1,4 +1,4 @@
-# Frontend-Model
+# Browser-Model
 Simple state management with minimalistic API. This is similar to how mongoose / sequalize (any orm) accesses and uses data on the backend. Bringing this functionality to the frontend is game changer, since anyone familiar with an orm can jump right in.
 
 ## Installation
