@@ -41,11 +41,11 @@ export declare class Model {
     static findById(id: string, single?: boolean): any;
     static difference(a: any, b: any): any;
     static _create: any;
-    static _delete: any;
+    static _remove: any;
     static _update: any;
     static _change: any;
     static onCreate(listener: any): () => void;
-    static onDelete(listener: any): () => void;
+    static onRemove(listener: any): () => void;
     static onUpdate(listener: any): () => void;
     static onChange(listener: any): () => void;
     static emitEvent(array: Array<string>): void;
@@ -56,6 +56,7 @@ export declare class Model {
     onSave(listener: any): () => void;
     onRemove(listener: any): () => void;
     onReload(listener: any): () => void;
-    onChange(listener: any): void;
+    onChange(listener: any): () => void;
+    on(event_name: string, callback?: Function): any;
     emitEvent(array: Array<string>): void;
 }

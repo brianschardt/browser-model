@@ -134,7 +134,7 @@ export class Model{
         let model_name = this.getModelName();
         this.removeLocalStorage(model_name);
         this._instances = [];
-        this.emitEvent(['delete']);
+        this.emitEvent(['remove']);
     }
 
     static setAllData(data: Array<Object>){
@@ -348,9 +348,13 @@ export class Model{
         return diff;
     }
 
+    //**********************************************************
+    //************* EVENTS *************************************
+    //**********************************************************
+
     //Global Model Events
     static _create:any = [];
-    static _delete:any = [];
+    static _remove:any = [];
     static _update:any = [];
     static _change:any = [];
 
@@ -361,10 +365,10 @@ export class Model{
         }
     }
 
-    static onDelete(listener:any){
-        this._delete.push(listener);
+    static onRemove(listener:any){
+        this._remove.push(listener);
         return ()=>{
-            this._delete = this._delete.filter((l:any) => l !== listener)
+            this._remove = this._remove.filter((l:any) => l !== listener)
         }
     }
 
@@ -394,8 +398,8 @@ export class Model{
                     this._update.forEach((listener: any) => listener());
                     this._change.forEach((listener: any) => listener());
                     break;
-                case 'delete':
-                    this._delete.forEach((listener: any) => listener());
+                case 'remove':
+                    this._remove.forEach((listener: any) => listener());
                     this._change.forEach((listener: any) => listener());
                     break;
             }
@@ -403,14 +407,12 @@ export class Model{
     }
 
     //Instance Model Events
-    //Global Model Events
     _save  :any = [];
     _remove:any = [];
     _reload:any = [];
     _change:any = [];
 
     onSave(listener:any){
-        console.log('on save listener working')
         this._save.push(listener);
         return ()=>{
             this._save = this._save.filter((l:any) => l !== listener)
@@ -433,8 +435,30 @@ export class Model{
 
     onChange(listener:any){
         this._change.push(listener);
+        return ()=>{
+            this._change = this._change.filter((l:any) => l !== listener)
+        }
     }
 
+    on(event_name:string, callback?:Function){
+        let ret:any;
+        switch(event_name){
+            case 'save':
+                ret = this.onSave(callback);
+                break;
+            case 'remove':
+                ret = this.onRemove(callback);
+                break;
+            case 'reload':
+                ret = this.onReload(callback);
+                break;
+            case 'change':
+                ret = this.onChange(callback);
+                break;
+        }
+
+        return ret;
+    }
     emitEvent(array:Array<string>){
         for ( let i in array){
             let kind = array[i];

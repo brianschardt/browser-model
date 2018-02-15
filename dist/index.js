@@ -4,7 +4,6 @@ var _ = require("underscore");
 var Model = /** @class */ (function () {
     function Model(obj_data) {
         //Instance Model Events
-        //Global Model Events
         this._save = [];
         this._remove = [];
         this._reload = [];
@@ -107,7 +106,7 @@ var Model = /** @class */ (function () {
         var model_name = this.getModelName();
         this.removeLocalStorage(model_name);
         this._instances = [];
-        this.emitEvent(['delete']);
+        this.emitEvent(['remove']);
     };
     Model.setAllData = function (data) {
         var model_name = this.getModelName();
@@ -304,11 +303,11 @@ var Model = /** @class */ (function () {
             _this._create = _this._create.filter(function (l) { return l !== listener; });
         };
     };
-    Model.onDelete = function (listener) {
+    Model.onRemove = function (listener) {
         var _this = this;
-        this._delete.push(listener);
+        this._remove.push(listener);
         return function () {
-            _this._delete = _this._delete.filter(function (l) { return l !== listener; });
+            _this._remove = _this._remove.filter(function (l) { return l !== listener; });
         };
     };
     Model.onUpdate = function (listener) {
@@ -337,8 +336,8 @@ var Model = /** @class */ (function () {
                     this._update.forEach(function (listener) { return listener(); });
                     this._change.forEach(function (listener) { return listener(); });
                     break;
-                case 'delete':
-                    this._delete.forEach(function (listener) { return listener(); });
+                case 'remove':
+                    this._remove.forEach(function (listener) { return listener(); });
                     this._change.forEach(function (listener) { return listener(); });
                     break;
             }
@@ -346,7 +345,6 @@ var Model = /** @class */ (function () {
     };
     Model.prototype.onSave = function (listener) {
         var _this = this;
-        console.log('on save listener working');
         this._save.push(listener);
         return function () {
             _this._save = _this._save.filter(function (l) { return l !== listener; });
@@ -367,7 +365,29 @@ var Model = /** @class */ (function () {
         };
     };
     Model.prototype.onChange = function (listener) {
+        var _this = this;
         this._change.push(listener);
+        return function () {
+            _this._change = _this._change.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.prototype.on = function (event_name, callback) {
+        var ret;
+        switch (event_name) {
+            case 'save':
+                ret = this.onSave(callback);
+                break;
+            case 'remove':
+                ret = this.onRemove(callback);
+                break;
+            case 'reload':
+                ret = this.onReload(callback);
+                break;
+            case 'change':
+                ret = this.onChange(callback);
+                break;
+        }
+        return ret;
     };
     Model.prototype.emitEvent = function (array) {
         for (var i in array) {
@@ -391,9 +411,12 @@ var Model = /** @class */ (function () {
     //*********** STATIC *******************************
     //**************************************************
     Model._instances = [];
+    //**********************************************************
+    //************* EVENTS *************************************
+    //**********************************************************
     //Global Model Events
     Model._create = [];
-    Model._delete = [];
+    Model._remove = [];
     Model._update = [];
     Model._change = [];
     return Model;
