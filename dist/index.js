@@ -2,7 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("underscore");
 var Model = /** @class */ (function () {
-    function Model() {
+    function Model(obj_data) {
+        //Instance Model Events
+        //Global Model Events
+        this._save = [];
+        this._remove = [];
+        this._reload = [];
+        this._change = [];
+        Object.assign(this, obj_data);
     }
     Model.prototype.getModelName = function () {
         return this.constructor.getModelName();
@@ -25,26 +32,41 @@ var Model = /** @class */ (function () {
     Model.prototype.uniqueIdName = function () {
         return this.constructor.getPrimaryKey();
     };
+    Model.prototype.uniqueId = function () {
+        var unique_name = this.uniqueIdName();
+        return this[unique_name];
+    };
     Model.prototype.save = function () {
         var query_obj = this.uniqueQueryIdentifier();
         var update_object = this.toObject();
-        this.constructor.updateOne(query_obj, update_object);
+        this.constructor.findOneAndUpdate(query_obj, update_object, { upsert: true });
+        this.emitEvent(['save']);
         // return (this.constructor as any).instantiateObject(update_object);
     };
     Model.prototype.remove = function () {
         var query_obj = this.uniqueQueryIdentifier();
+        this.constructor.removeInstance(query_obj);
         this.constructor.remove(query_obj);
+        this.emitEvent(['remove']);
+    };
+    Model.prototype.reload = function () {
+        var model = this.constructor.findById(this.uniqueId(), true);
+        var obj = model.toObject();
+        Object.assign(this, obj);
+        this.emitEvent(['reload']);
     };
     Model.prototype.getStorageValues = function () {
         var name = this.uniqueIdName();
         var id = this[name];
-        return this.constructor.findById(id).toObject();
+        return this.constructor.findById(id, true).toObject();
     };
     Model.prototype.getInstanceValues = function () {
         return this.toObject();
     };
     Model.prototype.getPropertyDifferences = function () {
-        return this.constructor.difference(this.getInstanceValues(), this.getStorageValues());
+        var instance = this.getInstanceValues();
+        var storage = this.getStorageValues();
+        return this.constructor.difference(instance, storage);
     };
     Model.prototype.storageDifference = function () {
         var diff = this.getPropertyDifferences();
@@ -62,7 +84,6 @@ var Model = /** @class */ (function () {
         });
         return instance_differences;
     };
-    //Static
     Model.describe = function () {
         var properties = Object.getOwnPropertyNames(this);
         properties = properties.splice(3);
@@ -85,6 +106,8 @@ var Model = /** @class */ (function () {
     Model.removeAllData = function () {
         var model_name = this.getModelName();
         this.removeLocalStorage(model_name);
+        this._instances = [];
+        this.emitEvent(['delete']);
     };
     Model.setAllData = function (data) {
         var model_name = this.getModelName();
@@ -135,12 +158,22 @@ var Model = /** @class */ (function () {
         }
         return new_data;
     };
-    Model.instantiateObject = function (obj_data) {
-        var obj = new this();
-        Object.assign(obj, obj_data);
+    //singe means that this object does not share a data reference to anywhere else
+    Model.instantiateObject = function (obj_data, single) {
+        var obj;
+        if (typeof single !== "undefined" && single === true) {
+            obj = new this(obj_data);
+            return obj;
+        }
+        var primary_key = this.getPrimaryKey();
+        obj = this._instances.filter(function (instance) { return instance[primary_key] === obj_data[primary_key]; })[0];
+        if (!obj) {
+            obj = new this(obj_data);
+            this._instances.push(obj);
+        }
         return obj;
     };
-    Model.create = function (data) {
+    Model.create = function (data, single) {
         var old_data = this.getAllData();
         var instance = this.schemaValidate(data);
         var primary_key = this.getPrimaryKey();
@@ -154,15 +187,26 @@ var Model = /** @class */ (function () {
         }
         old_data.push(instance);
         this.setAllData(old_data);
-        var inst_obj = this.instantiateObject(instance);
+        var inst_obj = this.instantiateObject(instance, single);
+        this.emitEvent(['create']);
         return inst_obj;
     };
-    Model.remove = function (search) {
+    Model.removeInstance = function (search) {
+        this._instances = this._instances.filter(function (instance) {
+            var obj = instance.toObject();
+            return !_.isMatch(obj, search);
+        });
+    };
+    Model.removeStorage = function (search) {
         var all_data = this.getAllData();
         var new_data = all_data.filter(function (data) { return !_.isMatch(data, search); });
         this.setAllData(new_data);
     };
-    Model.update = function (search, new_data) {
+    Model.remove = function (search) {
+        this.removeStorage(search);
+        this._change.forEach(function (listener) { return listener(); });
+    };
+    Model.update = function (search, new_data, single) {
         var all_data = this.getAllData();
         var instances = all_data.filter(function (data) { return _.isMatch(data, search); });
         if (!instances) {
@@ -174,10 +218,10 @@ var Model = /** @class */ (function () {
             for (var o in new_data) {
                 instance[o] = new_data[o];
             }
-            this.create(instance);
+            this.create(instance, single);
         }
     };
-    Model.updateOne = function (search, new_data) {
+    Model.updateOne = function (search, new_data, single) {
         var all_data = this.getAllData();
         var instance = all_data.filter(function (data) { return _.isMatch(data, search); })[0];
         if (!instance) {
@@ -187,9 +231,9 @@ var Model = /** @class */ (function () {
         for (var o in new_data) {
             instance[o] = new_data[o];
         }
-        return this.create(instance);
+        return this.create(instance, single);
     };
-    Model.findOne = function (search) {
+    Model.findOne = function (search, single) {
         var all_data = this.getAllData();
         var instance;
         if (!search) {
@@ -200,17 +244,17 @@ var Model = /** @class */ (function () {
         }
         if (typeof instance === 'undefined' || !instance)
             return null;
-        instance = this.instantiateObject(instance);
+        instance = this.instantiateObject(instance, single);
         return instance;
     };
-    Model.find = function (search) {
+    Model.find = function (search, single) {
         var all_data = this.getAllData();
         var instances = all_data.filter(function (data) { return _.isMatch(data, search); });
         var final_objs = instances;
         var array = [];
         for (var i in final_objs) {
             var instance = final_objs[i];
-            instance = this.instantiateObject(instance);
+            instance = this.instantiateObject(instance, single);
             array.push(instance);
         }
         return array;
@@ -225,10 +269,10 @@ var Model = /** @class */ (function () {
         if (!instance) {
             if (typeof options === 'object' && options.upsert === true) {
                 if (_.isEmpty(data)) {
-                    final_obj = this.create(search);
+                    final_obj = this.create(search, options.single);
                 }
                 else {
-                    final_obj = this.create(data);
+                    final_obj = this.create(data, options.single);
                 }
             }
             else {
@@ -236,15 +280,15 @@ var Model = /** @class */ (function () {
             }
         }
         else {
-            final_obj = this.updateOne(search, data);
+            final_obj = this.updateOne(search, data, options.single);
         }
         return final_obj;
     };
-    Model.findById = function (id) {
+    Model.findById = function (id, single) {
         var primary_key = this.getPrimaryKey();
         var obj = {};
         obj[primary_key] = id;
-        return this.findOne(obj);
+        return this.findOne(obj, single);
     };
     Model.difference = function (a, b) {
         var diff = _.reduce(a, function (result, value, key) {
@@ -253,6 +297,105 @@ var Model = /** @class */ (function () {
         }, []);
         return diff;
     };
+    Model.onCreate = function (listener) {
+        var _this = this;
+        this._create.push(listener);
+        return function () {
+            _this._create = _this._create.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.onDelete = function (listener) {
+        var _this = this;
+        this._delete.push(listener);
+        return function () {
+            _this._delete = _this._delete.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.onUpdate = function (listener) {
+        var _this = this;
+        this._update.push(listener);
+        return function () {
+            _this._update = _this._update.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.onChange = function (listener) {
+        var _this = this;
+        this._change.push(listener);
+        return function () {
+            _this._change = _this._change.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.emitEvent = function (array) {
+        for (var i in array) {
+            var kind = array[i];
+            switch (kind) {
+                case 'create':
+                    this._create.forEach(function (listener) { return listener(); });
+                    this._change.forEach(function (listener) { return listener(); });
+                    break;
+                case 'update':
+                    this._update.forEach(function (listener) { return listener(); });
+                    this._change.forEach(function (listener) { return listener(); });
+                    break;
+                case 'delete':
+                    this._delete.forEach(function (listener) { return listener(); });
+                    this._change.forEach(function (listener) { return listener(); });
+                    break;
+            }
+        }
+    };
+    Model.prototype.onSave = function (listener) {
+        var _this = this;
+        console.log('on save listener working');
+        this._save.push(listener);
+        return function () {
+            _this._save = _this._save.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.prototype.onRemove = function (listener) {
+        var _this = this;
+        this._remove.push(listener);
+        return function () {
+            _this._remove = _this._remove.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.prototype.onReload = function (listener) {
+        var _this = this;
+        this._reload.push(listener);
+        return function () {
+            _this._reload = _this._reload.filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.prototype.onChange = function (listener) {
+        this._change.push(listener);
+    };
+    Model.prototype.emitEvent = function (array) {
+        for (var i in array) {
+            var kind = array[i];
+            switch (kind) {
+                case 'save':
+                    this._save.forEach(function (listener) { return listener(); });
+                    this._change.forEach(function (listener) { return listener(); });
+                    break;
+                case 'remove':
+                    this._remove.forEach(function (listener) { return listener(); });
+                    this._change.forEach(function (listener) { return listener(); });
+                    break;
+                case 'reload':
+                    this._reload.forEach(function (listener) { return listener(); });
+                    break;
+            }
+        }
+    };
+    //**************************************************
+    //*********** STATIC *******************************
+    //**************************************************
+    Model._instances = [];
+    //Global Model Events
+    Model._create = [];
+    Model._delete = [];
+    Model._update = [];
+    Model._change = [];
     return Model;
 }());
 exports.Model = Model;
