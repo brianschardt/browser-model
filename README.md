@@ -1,5 +1,5 @@
 # Bamf-Store
-Model Storage System Angular 2+ NG*
+Simple state management with minimalistic API. This is similar to how mongoose / sequalize (any orm) accesses and uses data on the backend. Bringing this functionality to the frontend is game changer since anyone familiar with an orm can ump right in.
 
 ## Installation
 ```
@@ -73,6 +73,87 @@ converts model to Javascript Object
 let company = Company.findOne({name:'facebook'});
 obj = company.toObject();
 ```
+### reload
+reloads models instance data to match what is in browser storage
+```
+let company = Company.findOne({name:'facebook'});
+company.name = 'google';
+company.reload()
+console.log(company.name); // will print out facebook
+
+company.name = 'google';
+company.save()
+console.log(company.name); // will print out google
+```
+### storage and instance differences
+reloads models instance data to match what is in browser storage
+```
+let company = Company.findOne({name:'facebook'});
+company.name = 'google';
+
+let storage_dif = company.storageDifference();
+console.log(storage_dif);//log {name:'facebook'}
+
+let instance_dif = company.instanceDifference();
+console.log(instance_dif);//log {name:'google'}
+
+```
+
+### Instance Hooks
+## onSave
+
+```
+company.onSave(()=>{
+    console.log('company was saved');
+});
+```
+or
+```
+company.on('save', ()=>{
+    console.log('company was saved');
+});
+```
+
+## onRemove
+
+```
+company.onRemove(()=>{
+    console.log('company was deleted');
+});
+```
+or
+```
+company.on('remove', ()=>{
+    console.log('company was deleted');
+});
+```
+
+## onReload
+
+```
+company.onReload(()=>{
+    console.log('company was reloaded');
+});
+```
+or
+```
+company.on('reload', ()=>{
+    console.log('company was reloaded');
+});
+```
+## onChange
+
+```
+company.onChange(()=>{
+    console.log('company was changed');
+});
+```
+or
+```
+company.on('change', ()=>{
+    console.log('company was changed');
+});
+```
 ## Static Methods
 ### create
 creates new Instance of model
@@ -117,3 +198,27 @@ returns one instance with given id in webstorage
 let user1 = User.findById(2);
 ```
 
+### Static Hooks
+## onCreate
+
+```
+Company.onCreate(()=>{
+    console.log('A company was created and added to the web storage');
+});
+```
+
+## onRemove
+
+```
+Company.onRemove(()=>{
+    console.log('a company was removed');
+});
+```
+
+## onChange
+
+```
+company.onChange(()=>{
+    console.log('any company was changed');
+});
+```
