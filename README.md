@@ -3,7 +3,7 @@ Simple state management with minimalistic API. This is similar to how mongoose /
 
 ## Installation
 ```
-npm i bamfstore
+npm i browser-model
 ```
 
 ## Purpose
