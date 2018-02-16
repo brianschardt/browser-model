@@ -14,6 +14,7 @@ export declare class Model {
     getStorageValues(): any;
     getInstanceValues(): any;
     getPropertyDifferences(): any;
+    readonly static: any;
     storageDifference(): any;
     instanceDifference(): any;
     static _instances: Array<Model>;
@@ -45,5 +46,5 @@ export declare class Model {
     static emit(events: any, data?: any): void;
     _events: any;
     on(events: any, listener?: Function): (() => void) | undefined;
-    emit(events: any, data?: any): void;
+    emit(events: any, data?: any, toStatic?: boolean): void;
 }

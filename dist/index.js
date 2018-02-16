@@ -9,7 +9,7 @@ var Model = /** @class */ (function () {
         Object.assign(this, obj_data);
     }
     Model.prototype.getModelName = function () {
-        return this.constructor.getModelName();
+        return this.static.getModelName();
     };
     Model.prototype.toObject = function () {
         var properties = Object.getOwnPropertyNames(this);
@@ -21,13 +21,13 @@ var Model = /** @class */ (function () {
         return obj;
     };
     Model.prototype.uniqueQueryIdentifier = function () {
-        var primary_id = this.constructor.getPrimaryKey();
+        var primary_id = this.static.getPrimaryKey();
         var query_obj = {};
         query_obj[primary_id] = this[primary_id];
         return query_obj;
     };
     Model.prototype.uniqueIdName = function () {
-        return this.constructor.getPrimaryKey();
+        return this.static.getPrimaryKey();
     };
     Model.prototype.uniqueId = function () {
         var unique_name = this.uniqueIdName();
@@ -36,18 +36,18 @@ var Model = /** @class */ (function () {
     Model.prototype.save = function () {
         var query_obj = this.uniqueQueryIdentifier();
         var update_object = this.toObject();
-        this.constructor.findOneAndUpdate(query_obj, update_object, { upsert: true });
+        this.static.findOneAndUpdate(query_obj, update_object, { upsert: true });
         this.emit(['save', 'change']);
         // return (this.constructor as any).instantiateObject(update_object);
     };
     Model.prototype.remove = function () {
         var query_obj = this.uniqueQueryIdentifier();
-        this.constructor.remove(query_obj);
-        this.constructor.removeInstance(query_obj);
+        this.static.remove(query_obj);
+        this.static.removeInstance(query_obj);
         this.emit(['remove', 'change']);
     };
     Model.prototype.reload = function () {
-        var model = this.constructor.findById(this.uniqueId(), true);
+        var model = this.static.findById(this.uniqueId(), true);
         var obj = model.toObject();
         Object.assign(this, obj);
         this.emit(['reload', 'change']);
@@ -55,7 +55,7 @@ var Model = /** @class */ (function () {
     Model.prototype.getStorageValues = function () {
         var name = this.uniqueIdName();
         var id = this[name];
-        return this.constructor.findById(id, true).toObject();
+        return this.static.findById(id, true).toObject();
     };
     Model.prototype.getInstanceValues = function () {
         return this.toObject();
@@ -63,8 +63,15 @@ var Model = /** @class */ (function () {
     Model.prototype.getPropertyDifferences = function () {
         var instance = this.getInstanceValues();
         var storage = this.getStorageValues();
-        return this.constructor.difference(instance, storage);
+        return this.static.difference(instance, storage);
     };
+    Object.defineProperty(Model.prototype, "static", {
+        get: function () {
+            return this.constructor;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Model.prototype.storageDifference = function () {
         var diff = this.getPropertyDifferences();
         var storage = this.getStorageValues();
@@ -349,7 +356,7 @@ var Model = /** @class */ (function () {
             }
         }
     };
-    Model.prototype.emit = function (events, data) {
+    Model.prototype.emit = function (events, data, toStatic) {
         if (typeof events === 'string') {
             var event_listeners = this._events[events];
             if (event_listeners)
@@ -363,6 +370,8 @@ var Model = /** @class */ (function () {
                     event_listeners.forEach(function (listener) { return listener(data); });
             }
         }
+        if (toStatic)
+            this.static.emit(events, data); //this will send it to the whole class events
     };
     //**************************************************
     //*********** STATIC *******************************

@@ -1,6 +1,6 @@
 {
   "name": "browser-model",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "keywords": ["model", "storage", "redux", "browser", "browsermodel", "angular", "ng", "ngx"],
   "description": "Easy Model Storage for frontend development",
   "main": "dist/index.js",
