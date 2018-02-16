@@ -103,12 +103,6 @@ console.log(instance_dif);//log {name:'google'}
 ## onSave
 
 ```
-company.onSave(()=>{
-    console.log('company was saved');
-});
-```
-or
-```
 company.on('save', ()=>{
     console.log('company was saved');
 });
@@ -116,12 +110,6 @@ company.on('save', ()=>{
 
 ## onRemove
 
-```
-company.onRemove(()=>{
-    console.log('company was deleted');
-});
-```
-or
 ```
 company.on('remove', ()=>{
     console.log('company was deleted');
@@ -131,12 +119,6 @@ company.on('remove', ()=>{
 ## onReload
 
 ```
-company.onReload(()=>{
-    console.log('company was reloaded');
-});
-```
-or
-```
 company.on('reload', ()=>{
     console.log('company was reloaded');
 });
@@ -144,16 +126,29 @@ company.on('reload', ()=>{
 ## onChange
 
 ```
-company.onChange(()=>{
-    console.log('company was changed');
-});
-```
-or
-```
 company.on('change', ()=>{
     console.log('company was changed');
 });
 ```
+
+## Custom Hooks
+This is for the specific company 
+```
+company.emit(['added user']);
+
+company.on('added user', ()=>{
+    console.log('added user');
+});
+
+
+company.emit(['added product'], {name:'shoes'});
+
+company.on('added user', (product)=>{
+    console.log('added product: ', product.name);
+});
+
+```
+
 ## Static Methods
 ### create
 creates new Instance of model
@@ -202,7 +197,7 @@ let user1 = User.findById(2);
 ## onCreate
 
 ```
-Company.onCreate(()=>{
+Company.on('create', ()=>{
     console.log('A company was created and added to the web storage');
 });
 ```
@@ -210,7 +205,7 @@ Company.onCreate(()=>{
 ## onRemove
 
 ```
-Company.onRemove(()=>{
+Company.on('remove', ()=>{
     console.log('a company was removed');
 });
 ```
@@ -218,7 +213,24 @@ Company.onRemove(()=>{
 ## onChange
 
 ```
-company.onChange(()=>{
+Company.on('change', ()=>{
     console.log('any company was changed');
+});
+```
+
+## Custom Hooks
+This is for any and all data in your model
+```
+Company.emit(['added user']);
+
+Company.on('added user', ()=>{
+    console.log('added user');
+});
+
+
+Company.emit(['added product'], {name:'shoes'});
+
+Company.on('added user', (product)=>{
+    console.log('added product: ', product.name);
 });
 ```
