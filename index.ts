@@ -358,23 +358,37 @@ export class Model{
     //events are change, create, remove
     static _events:any = {};
 
-    static on(event_name:string, listener?:Function){
-        let ret:any;
-        if(!this._events[event_name]) this._events[event_name] = [];
+    static on(events:any, listener?:Function){
+        if(events === 'string'){
+            if(!this._events[events]) this._events[events] = [];
 
-        this._events[event_name].push(listener);
+            this._events[events].push(listener);
 
-        return ()=>{
-            this._events[event_name] = this._events[event_name].filter((l:any) => l !== listener)
+            return ()=>{
+                this._events[events] = this._events[events].filter((l:any) => l !== listener)
+            }
+        }else{
+            for (let i in events){
+                let event = events[i];
+                if(!this._events[event]) this._events[event] = [];
+
+                this._events[event].push(listener);
+            }
+
+            return
         }
     }
 
-    static emit(array:Array<string>, data?:any){
-        for ( let i in array){
-            let kind = array[i];
-
-            let event_listeners = this._events[kind];
+    static emit(events:any, data?:any){
+        if(typeof events === 'string'){
+            let event_listeners = this._events[events];
             if(event_listeners) event_listeners.forEach((listener: any) => listener(data));
+        }else{
+            for ( let i in events){
+                let kind = events[i];
+                let event_listeners = this._events[kind];
+                if(event_listeners) event_listeners.forEach((listener: any) => listener(data));
+            }
         }
     }
 
@@ -382,22 +396,36 @@ export class Model{
     //events are save, remove, reload, change
     _events:any = {};
 
-    on(event_name:string, listener?:Function){
-        let ret:any;
-        if(!this._events[event_name]) this._events[event_name] = [];
+    on(events:any, listener?:Function){
+        if(events === 'string'){
+            if(!this._events[events]) this._events[events] = [];
 
-        this._events[event_name].push(listener);
+            this._events[events].push(listener);
 
-        return ()=>{
-            this._events[event_name] = this._events[event_name].filter((l:any) => l !== listener)
+            return ()=>{
+                this._events[events] = this._events[events].filter((l:any) => l !== listener)
+            }
+        }else{
+            for (let i in events){
+                let event = events[i];
+                if(!this._events[event]) this._events[event] = [];
+
+                this._events[event].push(listener);
+            }
         }
     }
 
-    emit(array:Array<string>, data?:any){
-        for ( let i in array){
-            let kind = array[i];
-            let event_listeners = this._events[kind];
+    emit(events:any, data?:any){
+        if(typeof events === 'string'){
+            let event_listeners = this._events[events];
             if(event_listeners) event_listeners.forEach((listener: any) => listener(data));
+        }else{
+            for ( let i in events){
+                let kind = events[i];
+                let event_listeners = this._events[kind];
+                if(event_listeners) event_listeners.forEach((listener: any) => listener(data));
+            }
         }
     }
+
 }

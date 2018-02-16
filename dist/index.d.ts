@@ -41,9 +41,9 @@ export declare class Model {
     static findById(id: string, single?: boolean): any;
     static difference(a: any, b: any): any;
     static _events: any;
-    static on(event_name: string, listener?: Function): () => void;
-    static emit(array: Array<string>, data?: any): void;
+    static on(events: any, listener?: Function): (() => void) | undefined;
+    static emit(events: any, data?: any): void;
     _events: any;
-    on(event_name: string, listener?: Function): () => void;
-    emit(array: Array<string>, data?: any): void;
+    on(events: any, listener?: Function): (() => void) | undefined;
+    emit(events: any, data?: any): void;
 }

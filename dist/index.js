@@ -295,40 +295,73 @@ var Model = /** @class */ (function () {
         }, []);
         return diff;
     };
-    Model.on = function (event_name, listener) {
+    Model.on = function (events, listener) {
         var _this = this;
-        var ret;
-        if (!this._events[event_name])
-            this._events[event_name] = [];
-        this._events[event_name].push(listener);
-        return function () {
-            _this._events[event_name] = _this._events[event_name].filter(function (l) { return l !== listener; });
-        };
+        if (events === 'string') {
+            if (!this._events[events])
+                this._events[events] = [];
+            this._events[events].push(listener);
+            return function () {
+                _this._events[events] = _this._events[events].filter(function (l) { return l !== listener; });
+            };
+        }
+        else {
+            for (var i in events) {
+                var event_1 = events[i];
+                if (!this._events[event_1])
+                    this._events[event_1] = [];
+                this._events[event_1].push(listener);
+            }
+            return;
+        }
     };
-    Model.emit = function (array, data) {
-        for (var i in array) {
-            var kind = array[i];
-            var event_listeners = this._events[kind];
+    Model.emit = function (events, data) {
+        if (typeof events === 'string') {
+            var event_listeners = this._events[events];
             if (event_listeners)
                 event_listeners.forEach(function (listener) { return listener(data); });
         }
+        else {
+            for (var i in events) {
+                var kind = events[i];
+                var event_listeners = this._events[kind];
+                if (event_listeners)
+                    event_listeners.forEach(function (listener) { return listener(data); });
+            }
+        }
     };
-    Model.prototype.on = function (event_name, listener) {
+    Model.prototype.on = function (events, listener) {
         var _this = this;
-        var ret;
-        if (!this._events[event_name])
-            this._events[event_name] = [];
-        this._events[event_name].push(listener);
-        return function () {
-            _this._events[event_name] = _this._events[event_name].filter(function (l) { return l !== listener; });
-        };
+        if (events === 'string') {
+            if (!this._events[events])
+                this._events[events] = [];
+            this._events[events].push(listener);
+            return function () {
+                _this._events[events] = _this._events[events].filter(function (l) { return l !== listener; });
+            };
+        }
+        else {
+            for (var i in events) {
+                var event_2 = events[i];
+                if (!this._events[event_2])
+                    this._events[event_2] = [];
+                this._events[event_2].push(listener);
+            }
+        }
     };
-    Model.prototype.emit = function (array, data) {
-        for (var i in array) {
-            var kind = array[i];
-            var event_listeners = this._events[kind];
+    Model.prototype.emit = function (events, data) {
+        if (typeof events === 'string') {
+            var event_listeners = this._events[events];
             if (event_listeners)
                 event_listeners.forEach(function (listener) { return listener(data); });
+        }
+        else {
+            for (var i in events) {
+                var kind = events[i];
+                var event_listeners = this._events[kind];
+                if (event_listeners)
+                    event_listeners.forEach(function (listener) { return listener(data); });
+            }
         }
     };
     //**************************************************
