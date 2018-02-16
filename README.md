@@ -134,16 +134,21 @@ company.on('change', ()=>{
 ## Custom Hooks
 This is for the specific company 
 ```
-company.emit(['added user']);
+company.emit('added user');
 
 company.on('added user', ()=>{
     console.log('added user');
 });
 
 
-company.emit(['added product'], {name:'shoes'});
+company.emit(['added product', 'created product'], {name:'shoes'});
 
-company.on('added user', (product)=>{
+company.on('added product', (product)=>{
+    console.log('added product: ', product.name);
+});
+
+//watch for 2 events at the same time
+company.on(['added product', 'created product'], (product)=>{
     console.log('added product: ', product.name);
 });
 
@@ -221,16 +226,20 @@ Company.on('change', ()=>{
 ## Custom Hooks
 This is for any and all data in your model
 ```
-Company.emit(['added user']);
+Company.emit('added user');
 
 Company.on('added user', ()=>{
     console.log('added user');
 });
 
 
-Company.emit(['added product'], {name:'shoes'});
+Company.emit(['added product', 'created product'], {name:'shoes'});
 
-Company.on('added user', (product)=>{
+Company.on('added product', (product)=>{
+    console.log('added product: ', product.name);
+});
+
+Company.on(['added product', 'created product'], (product)=>{
     console.log('added product: ', product.name);
 });
 ```
