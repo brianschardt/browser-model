@@ -359,7 +359,7 @@ export class Model{
     static _events:any = {};
 
     static on(events:any, listener?:Function){
-        if(events === 'string'){
+        if(typeof events === 'string'){
             if(!this._events[events]) this._events[events] = [];
 
             this._events[events].push(listener);
@@ -427,5 +427,4 @@ export class Model{
             }
         }
     }
-
 }

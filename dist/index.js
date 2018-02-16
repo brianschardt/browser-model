@@ -297,7 +297,7 @@ var Model = /** @class */ (function () {
     };
     Model.on = function (events, listener) {
         var _this = this;
-        if (events === 'string') {
+        if (typeof events === 'string') {
             if (!this._events[events])
                 this._events[events] = [];
             this._events[events].push(listener);
