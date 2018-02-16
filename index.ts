@@ -46,22 +46,22 @@ export class Model{
         let query_obj = this.uniqueQueryIdentifier();
         let update_object = this.toObject();
         (this.constructor as any).findOneAndUpdate(query_obj, update_object, {upsert:true});
-        this.emitEvent(['save']);
+        this.emit(['save', 'change']);
         // return (this.constructor as any).instantiateObject(update_object);
     }
 
     remove(){
         let query_obj = this.uniqueQueryIdentifier();
-        (this.constructor as any).removeInstance(query_obj);
         (this.constructor as any).remove(query_obj);
-        this.emitEvent(['remove']);
+        (this.constructor as any).removeInstance(query_obj);
+        this.emit(['remove', 'change']);
     }
 
     reload(){//updates instance storage from browser data
         let model = (this.constructor as any).findById(this.uniqueId(), true);
         let obj = model.toObject();
         (<any>Object).assign(this, obj);
-        this.emitEvent(['reload']);
+        this.emit(['reload', 'change']);
     }
 
     getStorageValues(){
@@ -134,7 +134,7 @@ export class Model{
         let model_name = this.getModelName();
         this.removeLocalStorage(model_name);
         this._instances = [];
-        this.emitEvent(['remove']);
+        this.emit(['remove', 'change']);
     }
 
     static setAllData(data: Array<Object>){
@@ -229,7 +229,7 @@ export class Model{
         this.setAllData(old_data);
         let inst_obj = this.instantiateObject(instance, single);
 
-        this.emitEvent(['create']);
+        this.emit(['create', 'change']);
         return inst_obj;
     }
 
@@ -237,8 +237,10 @@ export class Model{
     static removeInstance(search:object){//Removes instance from the app storage
         this._instances = this._instances.filter(instance=>{
             let obj = instance.toObject();
-            return !_.isMatch(obj, search)
+            return !_.isMatch(obj, search);
         })
+
+        this.emit(['remove', 'change']);
     }
 
 
@@ -250,7 +252,7 @@ export class Model{
 
     static remove(search:object){
         this.removeStorage(search);
-        this._change.forEach((listener: any) => listener());
+        this.emit(['remove', 'change']);
     }
 
     static update(search:object, new_data?:any, single?:boolean){
@@ -353,128 +355,49 @@ export class Model{
     //**********************************************************
 
     //Global Model Events
-    static _create:any = [];
-    static _remove:any = [];
-    static _update:any = [];
-    static _change:any = [];
+    //events are change, create, remove
+    static _events:any = {};
 
-    static onCreate(listener:any){
-        this._create.push(listener);
+    static on(event_name:string, listener?:Function){
+        let ret:any;
+        if(!this._events[event_name]) this._events[event_name] = [];
+
+        this._events[event_name].push(listener);
+
         return ()=>{
-            this._create = this._create.filter((l:any) => l !== listener)
+            this._events[event_name] = this._events[event_name].filter((l:any) => l !== listener)
         }
     }
 
-    static onRemove(listener:any){
-        this._remove.push(listener);
-        return ()=>{
-            this._remove = this._remove.filter((l:any) => l !== listener)
-        }
-    }
-
-    static onUpdate(listener:any){
-        this._update.push(listener);
-        return ()=>{
-            this._update = this._update.filter((l:any) => l !== listener)
-        }
-    }
-
-    static onChange(listener:any){
-        this._change.push(listener);
-        return ()=>{
-            this._change = this._change.filter((l:any) => l !== listener)
-        }
-    }
-
-    static emitEvent(array:Array<string>){
+    static emit(array:Array<string>, data?:any){
         for ( let i in array){
             let kind = array[i];
-            switch (kind){
-                case 'create':
-                    this._create.forEach((listener: any) => listener());
-                    this._change.forEach((listener: any) => listener());
-                    break;
-                case 'update':
-                    this._update.forEach((listener: any) => listener());
-                    this._change.forEach((listener: any) => listener());
-                    break;
-                case 'remove':
-                    this._remove.forEach((listener: any) => listener());
-                    this._change.forEach((listener: any) => listener());
-                    break;
-            }
+
+            let event_listeners = this._events[kind];
+            if(event_listeners) event_listeners.forEach((listener: any) => listener(data));
         }
     }
 
     //Instance Model Events
-    _save  :any = [];
-    _remove:any = [];
-    _reload:any = [];
-    _change:any = [];
+    //events are save, remove, reload, change
+    _events:any = {};
 
-    onSave(listener:any){
-        this._save.push(listener);
-        return ()=>{
-            this._save = this._save.filter((l:any) => l !== listener)
-        }
-    }
-
-    onRemove(listener:any){
-        this._remove.push(listener);
-        return ()=>{
-            this._remove = this._remove.filter((l:any) => l !== listener)
-        }
-    }
-
-    onReload(listener:any){
-        this._reload.push(listener);
-        return ()=>{
-            this._reload = this._reload.filter((l:any) => l !== listener)
-        }
-    }
-
-    onChange(listener:any){
-        this._change.push(listener);
-        return ()=>{
-            this._change = this._change.filter((l:any) => l !== listener)
-        }
-    }
-
-    on(event_name:string, callback?:Function){
+    on(event_name:string, listener?:Function){
         let ret:any;
-        switch(event_name){
-            case 'save':
-                ret = this.onSave(callback);
-                break;
-            case 'remove':
-                ret = this.onRemove(callback);
-                break;
-            case 'reload':
-                ret = this.onReload(callback);
-                break;
-            case 'change':
-                ret = this.onChange(callback);
-                break;
-        }
+        if(!this._events[event_name]) this._events[event_name] = [];
 
-        return ret;
+        this._events[event_name].push(listener);
+
+        return ()=>{
+            this._events[event_name] = this._events[event_name].filter((l:any) => l !== listener)
+        }
     }
-    emitEvent(array:Array<string>){
+
+    emit(array:Array<string>, data?:any){
         for ( let i in array){
             let kind = array[i];
-            switch (kind){
-                case 'save':
-                    this._save.forEach((listener: any)   => listener());
-                    this._change.forEach((listener: any) => listener());
-                    break;
-                case 'remove':
-                    this._remove.forEach((listener: any) => listener());
-                    this._change.forEach((listener: any) => listener());
-                    break;
-                case 'reload':
-                    this._reload.forEach((listener: any) => listener());
-                    break;
-            }
+            let event_listeners = this._events[kind];
+            if(event_listeners) event_listeners.forEach((listener: any) => listener(data));
         }
     }
 }

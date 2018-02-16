@@ -4,10 +4,8 @@ var _ = require("underscore");
 var Model = /** @class */ (function () {
     function Model(obj_data) {
         //Instance Model Events
-        this._save = [];
-        this._remove = [];
-        this._reload = [];
-        this._change = [];
+        //events are save, remove, reload, change
+        this._events = {};
         Object.assign(this, obj_data);
     }
     Model.prototype.getModelName = function () {
@@ -39,20 +37,20 @@ var Model = /** @class */ (function () {
         var query_obj = this.uniqueQueryIdentifier();
         var update_object = this.toObject();
         this.constructor.findOneAndUpdate(query_obj, update_object, { upsert: true });
-        this.emitEvent(['save']);
+        this.emit(['save', 'change']);
         // return (this.constructor as any).instantiateObject(update_object);
     };
     Model.prototype.remove = function () {
         var query_obj = this.uniqueQueryIdentifier();
-        this.constructor.removeInstance(query_obj);
         this.constructor.remove(query_obj);
-        this.emitEvent(['remove']);
+        this.constructor.removeInstance(query_obj);
+        this.emit(['remove', 'change']);
     };
     Model.prototype.reload = function () {
         var model = this.constructor.findById(this.uniqueId(), true);
         var obj = model.toObject();
         Object.assign(this, obj);
-        this.emitEvent(['reload']);
+        this.emit(['reload', 'change']);
     };
     Model.prototype.getStorageValues = function () {
         var name = this.uniqueIdName();
@@ -106,7 +104,7 @@ var Model = /** @class */ (function () {
         var model_name = this.getModelName();
         this.removeLocalStorage(model_name);
         this._instances = [];
-        this.emitEvent(['remove']);
+        this.emit(['remove', 'change']);
     };
     Model.setAllData = function (data) {
         var model_name = this.getModelName();
@@ -187,7 +185,7 @@ var Model = /** @class */ (function () {
         old_data.push(instance);
         this.setAllData(old_data);
         var inst_obj = this.instantiateObject(instance, single);
-        this.emitEvent(['create']);
+        this.emit(['create', 'change']);
         return inst_obj;
     };
     Model.removeInstance = function (search) {
@@ -195,6 +193,7 @@ var Model = /** @class */ (function () {
             var obj = instance.toObject();
             return !_.isMatch(obj, search);
         });
+        this.emit(['remove', 'change']);
     };
     Model.removeStorage = function (search) {
         var all_data = this.getAllData();
@@ -203,7 +202,7 @@ var Model = /** @class */ (function () {
     };
     Model.remove = function (search) {
         this.removeStorage(search);
-        this._change.forEach(function (listener) { return listener(); });
+        this.emit(['remove', 'change']);
     };
     Model.update = function (search, new_data, single) {
         var all_data = this.getAllData();
@@ -296,115 +295,40 @@ var Model = /** @class */ (function () {
         }, []);
         return diff;
     };
-    Model.onCreate = function (listener) {
+    Model.on = function (event_name, listener) {
         var _this = this;
-        this._create.push(listener);
-        return function () {
-            _this._create = _this._create.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.onRemove = function (listener) {
-        var _this = this;
-        this._remove.push(listener);
-        return function () {
-            _this._remove = _this._remove.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.onUpdate = function (listener) {
-        var _this = this;
-        this._update.push(listener);
-        return function () {
-            _this._update = _this._update.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.onChange = function (listener) {
-        var _this = this;
-        this._change.push(listener);
-        return function () {
-            _this._change = _this._change.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.emitEvent = function (array) {
-        for (var i in array) {
-            var kind = array[i];
-            switch (kind) {
-                case 'create':
-                    this._create.forEach(function (listener) { return listener(); });
-                    this._change.forEach(function (listener) { return listener(); });
-                    break;
-                case 'update':
-                    this._update.forEach(function (listener) { return listener(); });
-                    this._change.forEach(function (listener) { return listener(); });
-                    break;
-                case 'remove':
-                    this._remove.forEach(function (listener) { return listener(); });
-                    this._change.forEach(function (listener) { return listener(); });
-                    break;
-            }
-        }
-    };
-    Model.prototype.onSave = function (listener) {
-        var _this = this;
-        this._save.push(listener);
-        return function () {
-            _this._save = _this._save.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.prototype.onRemove = function (listener) {
-        var _this = this;
-        this._remove.push(listener);
-        return function () {
-            _this._remove = _this._remove.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.prototype.onReload = function (listener) {
-        var _this = this;
-        this._reload.push(listener);
-        return function () {
-            _this._reload = _this._reload.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.prototype.onChange = function (listener) {
-        var _this = this;
-        this._change.push(listener);
-        return function () {
-            _this._change = _this._change.filter(function (l) { return l !== listener; });
-        };
-    };
-    Model.prototype.on = function (event_name, callback) {
         var ret;
-        switch (event_name) {
-            case 'save':
-                ret = this.onSave(callback);
-                break;
-            case 'remove':
-                ret = this.onRemove(callback);
-                break;
-            case 'reload':
-                ret = this.onReload(callback);
-                break;
-            case 'change':
-                ret = this.onChange(callback);
-                break;
-        }
-        return ret;
+        if (!this._events[event_name])
+            this._events[event_name] = [];
+        this._events[event_name].push(listener);
+        return function () {
+            _this._events[event_name] = _this._events[event_name].filter(function (l) { return l !== listener; });
+        };
     };
-    Model.prototype.emitEvent = function (array) {
+    Model.emit = function (array, data) {
         for (var i in array) {
             var kind = array[i];
-            switch (kind) {
-                case 'save':
-                    this._save.forEach(function (listener) { return listener(); });
-                    this._change.forEach(function (listener) { return listener(); });
-                    break;
-                case 'remove':
-                    this._remove.forEach(function (listener) { return listener(); });
-                    this._change.forEach(function (listener) { return listener(); });
-                    break;
-                case 'reload':
-                    this._reload.forEach(function (listener) { return listener(); });
-                    break;
-            }
+            var event_listeners = this._events[kind];
+            if (event_listeners)
+                event_listeners.forEach(function (listener) { return listener(data); });
+        }
+    };
+    Model.prototype.on = function (event_name, listener) {
+        var _this = this;
+        var ret;
+        if (!this._events[event_name])
+            this._events[event_name] = [];
+        this._events[event_name].push(listener);
+        return function () {
+            _this._events[event_name] = _this._events[event_name].filter(function (l) { return l !== listener; });
+        };
+    };
+    Model.prototype.emit = function (array, data) {
+        for (var i in array) {
+            var kind = array[i];
+            var event_listeners = this._events[kind];
+            if (event_listeners)
+                event_listeners.forEach(function (listener) { return listener(data); });
         }
     };
     //**************************************************
@@ -415,10 +339,8 @@ var Model = /** @class */ (function () {
     //************* EVENTS *************************************
     //**********************************************************
     //Global Model Events
-    Model._create = [];
-    Model._remove = [];
-    Model._update = [];
-    Model._change = [];
+    //events are change, create, remove
+    Model._events = {};
     return Model;
 }());
 exports.Model = Model;
