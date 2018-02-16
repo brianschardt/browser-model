@@ -189,6 +189,13 @@ var Model = /** @class */ (function () {
             }
             instance[primary_key] = id;
         }
+        var check = old_data.filter(function (m) { return m[primary_key] === instance[primary_key]; })[0];
+        if (check) {
+            throw Error("Duplicate key in " + this.getModelName() + " model, key: " + primary_key + " value: " + instance[primary_key]);
+        } //means there is already an object with this primary key
+        if (!instance[primary_key] || instance[primary_key] == '') {
+            throw Error("No key given in " + this.getModelName() + " model, key: " + primary_key + " value: " + instance[primary_key]);
+        }
         old_data.push(instance);
         this.setAllData(old_data);
         var inst_obj = this.instantiateObject(instance, single);
