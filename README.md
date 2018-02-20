@@ -397,6 +397,7 @@ ngOnInit() {
 }
 ```
 ### One to Many
+#### hasMany
 Lets say the user has many posts
 Example Model
 ```
@@ -451,7 +452,6 @@ ngOnInit() {
     }
 }
 ```
-#### hasMany
-This gets more complicated. Functionality is completed, but has not been documented please comment here if you want this to be documented.
 ### Many to Many
+This gets more complicated. Functionality is completed, but has not been documented please comment here if you want this to be documented.
 #### belongsToMany
