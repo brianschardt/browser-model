@@ -6,7 +6,7 @@ Simple state management with minimalistic API. This is similar to how mongoose /
 npm i browser-model
 ```
 
-[Example](Example Component)
+## [Example](#Example Component)
 
 
 
