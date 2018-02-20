@@ -88,6 +88,42 @@ var Model = /** @class */ (function () {
         });
         return instance_differences;
     };
+    //********               *********
+    //******** RELATIONSHIPS *********
+    //********               *********
+    Model.prototype.belongsTo = function (model, foreign_key, reference_key) {
+        var query_obj = {};
+        query_obj[reference_key] = this[foreign_key];
+        return model.findOne(query_obj);
+    };
+    Model.prototype.hasOne = function (model, foreign_key, reference_key) {
+        var query_obj = {};
+        query_obj[foreign_key] = this[reference_key];
+        return model.findOne(query_obj);
+    };
+    Model.prototype.hasMany = function (model, foreign_key, reference_key) {
+        var query_obj = {};
+        query_obj[foreign_key] = this[reference_key];
+        return model.find(query_obj);
+    };
+    Model.prototype.belongsToMany = function (model, foreign_key, reference_key, contains) {
+        var query_obj = {};
+        if (contains) {
+            var value_array = this[foreign_key];
+            var instance_array = [];
+            for (var i in value_array) {
+                var value = value_array[i];
+                query_obj[reference_key] = value;
+                var instances = model.find(query_obj);
+                instance_array = instance_array.concat(instances);
+            }
+            return instance_array;
+        }
+        else {
+            query_obj[foreign_key] = this[reference_key];
+            return model.findArray(query_obj);
+        }
+    };
     Model.describe = function () {
         var properties = Object.getOwnPropertyNames(this);
         properties = properties.splice(3);
@@ -245,6 +281,18 @@ var Model = /** @class */ (function () {
         }
         return this.create(instance, single);
     };
+    Model.find = function (search, single) {
+        var all_data = this.getAllData();
+        var instances = all_data.filter(function (data) { return _.isMatch(data, search); });
+        var final_objs = instances;
+        var array = [];
+        for (var i in final_objs) {
+            var instance = final_objs[i];
+            instance = this.instantiateObject(instance, single);
+            array.push(instance);
+        }
+        return array;
+    };
     Model.findOne = function (search, single) {
         var all_data = this.getAllData();
         var instance;
@@ -259,9 +307,13 @@ var Model = /** @class */ (function () {
         instance = this.instantiateObject(instance, single);
         return instance;
     };
-    Model.find = function (search, single) {
+    Model.findArray = function (search, single) {
         var all_data = this.getAllData();
-        var instances = all_data.filter(function (data) { return _.isMatch(data, search); });
+        var key = _.keys(search)[0];
+        var value = search[key];
+        var instances = all_data.filter(function (data) {
+            return data[key].includes(value);
+        });
         var final_objs = instances;
         var array = [];
         for (var i in final_objs) {
@@ -270,6 +322,24 @@ var Model = /** @class */ (function () {
             array.push(instance);
         }
         return array;
+    };
+    Model.findOneArray = function (search, single) {
+        var all_data = this.getAllData();
+        var instance;
+        if (!search) {
+            instance = all_data[0];
+        }
+        else {
+            var key_1 = _.keys(search)[0];
+            var value_1 = search[key_1];
+            instance = all_data.filter(function (data) {
+                return data[key_1].includes(value_1)[0];
+            });
+        }
+        if (typeof instance === 'undefined' || !instance)
+            return null;
+        instance = this.instantiateObject(instance, single);
+        return instance;
     };
     Model.findOneAndUpdate = function (search, data, options) {
         if (typeof search !== 'object') {
@@ -380,9 +450,9 @@ var Model = /** @class */ (function () {
         if (toStatic)
             this.static.emit(events, data); //this will send it to the whole class events
     };
-    //**************************************************
-    //*********** STATIC *******************************
-    //**************************************************
+    //***************************************
+    //*********** STATIC ********************
+    //***************************************
     Model._instances = [];
     //**********************************************************
     //************* EVENTS *************************************

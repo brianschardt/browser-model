@@ -17,6 +17,10 @@ export declare class Model {
     readonly static: any;
     storageDifference(): any;
     instanceDifference(): any;
+    belongsTo(model: any, foreign_key: any, reference_key: any): any;
+    hasOne(model: any, foreign_key: any, reference_key: any): any;
+    hasMany(model: any, foreign_key: any, reference_key: any): any;
+    belongsToMany(model: any, foreign_key: any, reference_key: any, contains?: boolean): any;
     static _instances: Array<Model>;
     static describe(): Array<string>;
     static setlocalStorage(name: string, data: Object): void;
@@ -36,8 +40,10 @@ export declare class Model {
     static remove(search: object): void;
     static update(search: object, new_data?: any, single?: boolean): null | undefined;
     static updateOne(search: object, new_data: any, single?: boolean): any;
-    static findOne(search?: object, single?: boolean): any;
     static find(search: object, single?: boolean): any[];
+    static findOne(search?: object, single?: boolean): any;
+    static findArray(search: any, single?: boolean): any[];
+    static findOneArray(search?: any, single?: boolean): any;
     static findOneAndUpdate(search: object, data?: any, options?: any): any;
     static findById(id: string, single?: boolean): any;
     static difference(a: any, b: any): any;
