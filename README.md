@@ -1,5 +1,5 @@
 # Browser-Model
-Simple state management with minimalistic API. This is similar to how mongoose / sequalize (any orm) accesses and uses data on the backend. Bringing this functionality to the frontend is game changer, since anyone familiar with an orm can jump right in.
+Simple state management with minimalistic API. This is similar to how mongoose / eloquent(laravel) (any orm) accesses and manages data on the backend. Bringing this functionality to the frontend is game changer, since anyone familiar with an orm can jump right in.
 
 ## Installation
 ```
@@ -47,9 +47,9 @@ npm i browser-model
 
     
 ## Purpose
-This is made to access and store data in the browser that is easily retrieved from different components in Angular. This is very similar to a model base system like an ODM. the syntax is very similar to mongoose.
-It stores the data as a json string in the browser, and then queries and parses it to retrieve the data. This helps eliminate the need for redundant Http requests, and also complex ways of storing and retrieving data.
-This uses already familiar known backend language. 
+This is made to access and store data in the browser that is easily retrieved from different components in Angular. This is very similar to a model base system like an ODM/ORM. the syntax is very similar to Laravel's Eloquent. Each model has events that are triggered which allows for realtime view change. This is very useful for large apps when actively checking data slows down the app significantly.
+
+This package may actually work with react. TBD
 
 If you refresh the browser the data still exists inside, and is easily retrievable. Pretty awesome!
 
