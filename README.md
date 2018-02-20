@@ -16,16 +16,23 @@ npm i browser-model
     - [toObject](#toobject)
     - [reload](#reload)
     - [Storage Differences](#storage-and-instance-differences)
-5. [Instance Hooks / Events](#instance-hooks)
+5. [Instance Hooks & Events](#instance-events--hooks)
     - [On Save](#on-save)
     - [On Remove](#on-remove)
     - [On Reload](#on-reload)
     - [On Change](#on-change)
     - [Custom Events](#on-change)
 6. [Static Methods](#static-methods)
+    - [create](#create)
+    - [remove](#remove-1)
+    - [update](#update)
+    - [updateOne](#updateone)
+    - [find](#find)
+    - [findOne](#findone)
+    - [findOneAndUpdate](#findoneandupdate)
+    - [findById]{#findbyid)
 
-
-
+    
 ## Purpose
 This is made to access and store data in the browser that is easily retrieved from different components in Angular. This is very similar to a model base system like an ODM. the syntax is very similar to mongoose.
 It stores the data as a json string in the browser, and then queries and parses it to retrieve the data. This helps eliminate the need for redundant Http requests, and also complex ways of storing and retrieving data.
