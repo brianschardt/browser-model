@@ -1,5 +1,5 @@
 # Browser-Model
-Simple state management with minimalistic API. This is similar to how mongoose / eloquent(laravel) (any orm) accesses and manages data on the backend. Bringing this functionality to the frontend is game changer, since anyone familiar with an orm can jump right in. This is made for Angualar 2+ but may also work with react. Although redux is great this is meant to be a simpler and more effective solution to state managment. 
+Simple state management with minimalistic API for angular 2+. This is similar to how mongoose / eloquent(laravel) (any orm) accesses and manages data on the backend. Bringing this functionality to the frontend is game changer, since anyone familiar with an orm can jump right in. This is made for Angualar 2+ but may also work with react. Although redux is great this is meant to be a simpler and more effective solution to state managment. 
 
 ## Installation
 ```
