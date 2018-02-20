@@ -295,7 +295,57 @@ Company.on(['added product', 'created product'], (product)=>{
 ## Associations
 
 ### One to One
+One-To-One associations are associations between exactly two models connected by a single foreign key.
+A simple example would be User that owns only one Post
 #### hasOne
+Example Model
+```
+import { Model }            from 'browser-model';
+import { Post }             from './post.model';
+
+export class User extends Model {
+  _id;
+  name;
+
+  static SCHEMA = {
+    _id:{type:'string', primary:true},//this means every time you make a new object you must give it a _id
+    name:{type:'string'},
+  };
+
+  constructor(obj:object){
+    super(obj);
+  }
+
+  Post(){
+    return this.hasOne(User, 'user_id', '_id');
+  }
+
+}
+
+export class Post extends Model {
+  _id;
+  post_name;
+
+  static SCHEMA = {
+    _id:{type:'string', primary:true},//this means every time you make a new object you must give it a _id
+    post_name:{type:'string'},
+  };
+
+  constructor(obj:object){
+    super(obj);
+  }
+
+}
+```
+Then in the Component
+```
+ngOnInit() {
+    this.user  = User.Auth();
+    this.post = this.user.Post();
+    console.log('post name', this.post.post_name);
+}
+```
+
 #### belongsTo
 
 ### One to Many
