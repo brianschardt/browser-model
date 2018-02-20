@@ -115,8 +115,8 @@ console.log(instance_dif);//log {name:'google'}
 
 ```
 
-### Instance Hooks
-#### On Save
+## Instance Hooks
+### On Save
 
 ```
 company.on('save', ()=>{
@@ -124,7 +124,7 @@ company.on('save', ()=>{
 });
 ```
 
-#### On Remove
+### On Remove
 
 ```
 company.on('remove', ()=>{
@@ -132,14 +132,14 @@ company.on('remove', ()=>{
 });
 ```
 
-#### On Reload
+### On Reload
 
 ```
 company.on('reload', ()=>{
     console.log('company was reloaded');
 });
 ```
-#### On Change
+### On Change
 
 ```
 company.on('change', ()=>{
@@ -147,7 +147,7 @@ company.on('change', ()=>{
 });
 ```
 
-#### Custom Hooks
+### Custom Hooks
 This is for the specific company 
 ```
 company.emit('added user');
@@ -214,8 +214,8 @@ returns one instance with given id in webstorage
 let user1 = User.findById(2);
 ```
 
-### Static Hooks
-## On Create
+## Static Hooks
+### On Create
 
 ```
 Company.on('create', ()=>{
@@ -223,7 +223,7 @@ Company.on('create', ()=>{
 });
 ```
 
-## On Remove
+### On Remove
 
 ```
 Company.on('remove', ()=>{
@@ -231,7 +231,7 @@ Company.on('remove', ()=>{
 });
 ```
 
-## On Change
+### On Change
 
 ```
 Company.on('change', ()=>{
@@ -239,7 +239,7 @@ Company.on('change', ()=>{
 });
 ```
 
-## Custom Hooks
+### Custom Hooks
 This is for any and all data in your model
 ```
 Company.emit('added user');
