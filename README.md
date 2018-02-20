@@ -11,13 +11,13 @@ npm i browser-model
 2. [Example Model](#example-model)
 3. [Example Component](#example-component)
 4. [Instance Methods](#instance-methods)
-    - [Save](#save)
-    - [Remove](#remove)
+    - [save](#save)
+    - [remove](#remove)
     - [toObject](#toobject)
     - [reload](#reload)
     - [Storage Differences](#storage-and-instance-differences)
-5. [Instance Hooks / Events]
-    - [On Save]()
+5. [Instance Hooks / Events](#instance-hooks)
+    - [On Save](#on-save)
 6. [Static Methods](#static-methods)
 
 
@@ -116,7 +116,7 @@ console.log(instance_dif);//log {name:'google'}
 ```
 
 ### Instance Hooks
-## On Save
+#### On Save
 
 ```
 company.on('save', ()=>{
@@ -124,7 +124,7 @@ company.on('save', ()=>{
 });
 ```
 
-## On Remove
+#### On Remove
 
 ```
 company.on('remove', ()=>{
@@ -132,14 +132,14 @@ company.on('remove', ()=>{
 });
 ```
 
-## On Reload
+#### On Reload
 
 ```
 company.on('reload', ()=>{
     console.log('company was reloaded');
 });
 ```
-## On Change
+#### On Change
 
 ```
 company.on('change', ()=>{
@@ -147,7 +147,7 @@ company.on('change', ()=>{
 });
 ```
 
-## Custom Hooks
+#### Custom Hooks
 This is for the specific company 
 ```
 company.emit('added user');
