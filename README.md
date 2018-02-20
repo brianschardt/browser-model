@@ -8,7 +8,7 @@ npm i browser-model
 
 ## Doc Menu
 1. [Purpose](#purpose)
-++ [Example Model](#example-model)
+++. [Example Model](#example-model)
 ++ [Example Component](#example-component)
 ++ [Instance Methods](#instance-methods)
     - [save](#save)
