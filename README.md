@@ -6,12 +6,19 @@ Simple state management with minimalistic API. This is similar to how mongoose /
 npm i browser-model
 ```
 
+## Doc Menu
 1. [Purpose](#purpose)
 2. [Example Model](#example-model)
 3. [Example Component](#example-component)
 4. [Instance Methods](#instance-methods)
     - [Save](#save)
     - [Remove](#remove)
+    - [toObject](#toobject)
+    - [reload](#reload)
+    - [Storage Differences](#storage-and-instance-differences)
+5. [Instance Hooks / Events]
+    - [On Save]()
+6. [Static Methods](#static-methods)
 
 
 
@@ -109,7 +116,7 @@ console.log(instance_dif);//log {name:'google'}
 ```
 
 ### Instance Hooks
-## onSave
+## On Save
 
 ```
 company.on('save', ()=>{
@@ -117,7 +124,7 @@ company.on('save', ()=>{
 });
 ```
 
-## onRemove
+## On Remove
 
 ```
 company.on('remove', ()=>{
@@ -125,14 +132,14 @@ company.on('remove', ()=>{
 });
 ```
 
-## onReload
+## On Reload
 
 ```
 company.on('reload', ()=>{
     console.log('company was reloaded');
 });
 ```
-## onChange
+## On Change
 
 ```
 company.on('change', ()=>{
@@ -208,7 +215,7 @@ let user1 = User.findById(2);
 ```
 
 ### Static Hooks
-## onCreate
+## On Create
 
 ```
 Company.on('create', ()=>{
@@ -216,7 +223,7 @@ Company.on('create', ()=>{
 });
 ```
 
-## onRemove
+## On Remove
 
 ```
 Company.on('remove', ()=>{
@@ -224,7 +231,7 @@ Company.on('remove', ()=>{
 });
 ```
 
-## onChange
+## On Change
 
 ```
 Company.on('change', ()=>{
