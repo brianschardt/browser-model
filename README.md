@@ -38,8 +38,8 @@ npm i browser-model
     - [Custom Events](#custom-events-1)
 8. [Associations](#)
     - [One to One](#)
-        -- [hasOne](#)
-        -- [belongsTo](#)
+        - [hasOne](#)
+        - [belongsTo](#)
     - [One to Many](#)
     - [Many to Many](#)
 
