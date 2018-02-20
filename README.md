@@ -6,6 +6,16 @@ Simple state management with minimalistic API. This is similar to how mongoose /
 npm i browser-model
 ```
 
+[Purpose]           # Purpose
+[Example]           # Example
+[Instance]          # Example
+[Instance Events]   # Example
+[Relations]         # Example
+[Static]            # Example
+[Static Events]     # Example
+
+
+
 ## Purpose
 This is made to access and store data in the browser that is easily retrieved from different components in Angular. This is very similar to a model base system like an ODM. the syntax is very similar to mongoose.
 It stores the data as a json string in the browser, and then queries and parses it to retrieve the data. This helps eliminate the need for redundant Http requests, and also complex ways of storing and retrieving data.
