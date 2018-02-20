@@ -301,7 +301,6 @@ A simple example would be User that owns only one Post
 Example Model
 ```
 import { Model }            from 'browser-model';
-import { Post }             from './post.model';
 
 export class User extends Model {
   _id;
@@ -350,7 +349,6 @@ ngOnInit() {
 Example Model
 ```
 import { Model }            from 'browser-model';
-import { Post }             from './post.model';
 
 export class User extends Model {
   _id;
@@ -399,7 +397,61 @@ ngOnInit() {
 }
 ```
 ### One to Many
-#### hasMany
+Lets say the user has many posts
+Example Model
+```
+import { Model }            from 'browser-model';
 
+export class User extends Model {
+  _id;
+  name;
+
+  static SCHEMA = {
+    _id:{type:'string', primary:true},//this means every time you make a new object you must give it a _id
+    name:{type:'string'},
+  };
+
+  constructor(obj:object){
+    super(obj);
+  }
+
+  Posts(){
+    return this.hasMany(Post, 'user_id', '_id');
+  }
+
+}
+
+export class Post extends Model {
+  _id;
+  post_name;
+
+  static SCHEMA = {
+    _id:{type:'string', primary:true},//this means every time you make a new object you must give it a _id
+    post_name:{type:'string'},
+  };
+
+  constructor(obj:object){
+    super(obj);
+  }
+  
+  User(){
+    return this.belongsTo(User, 'user_id', '_id');
+  }
+
+}
+```
+Then in the Component
+```
+ngOnInit() {
+    this.user = User.findById(1);
+    let posts = this.user.Posts();
+    for(let i in posts){
+        let post = posts[i];
+        console.log('post name', post.post_name);
+    }
+}
+```
+#### hasMany
+This gets more complicated. Functionality is completed, but has not been documented please comment here if you want this to be documented.
 ### Many to Many
 #### belongsToMany
