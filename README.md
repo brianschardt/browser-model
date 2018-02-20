@@ -6,13 +6,8 @@ Simple state management with minimalistic API. This is similar to how mongoose /
 npm i browser-model
 ```
 
-[Purpose]           # Purpose
-[Example]           # Example
-[Instance]          # Example
-[Instance Events]   # Example
-[Relations]         # Example
-[Static]            # Example
-[Static Events]     # Example
+[Example](Example Component)
+
 
 
 
