@@ -18,6 +18,10 @@ npm i browser-model
     - [Storage Differences](#storage-and-instance-differences)
 5. [Instance Hooks / Events](#instance-hooks)
     - [On Save](#on-save)
+    - [On Remove](#on-remove)
+    - [On Reload](#on-reload)
+    - [On Change](#on-change)
+    - [Custom Events](#on-change)
 6. [Static Methods](#static-methods)
 
 
@@ -115,7 +119,7 @@ console.log(instance_dif);//log {name:'google'}
 
 ```
 
-## Instance Hooks
+## Instance Events & Hooks
 ### On Save
 
 ```
@@ -147,7 +151,7 @@ company.on('change', ()=>{
 });
 ```
 
-### Custom Hooks
+### Custom Events
 This is for the specific company 
 ```
 company.emit('added user');
@@ -214,7 +218,7 @@ returns one instance with given id in webstorage
 let user1 = User.findById(2);
 ```
 
-## Static Hooks
+## Static Events & Hooks
 ### On Create
 
 ```
@@ -239,7 +243,7 @@ Company.on('change', ()=>{
 });
 ```
 
-### Custom Hooks
+### Custom Events
 This is for any and all data in your model
 ```
 Company.emit('added user');
