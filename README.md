@@ -317,7 +317,7 @@ export class User extends Model {
   }
 
   Post(){
-    return this.hasOne(User, 'user_id', '_id');
+    return this.hasOne(Post, 'user_id', '_id');
   }
 
 }
@@ -347,7 +347,57 @@ ngOnInit() {
 ```
 
 #### belongsTo
+Example Model
+```
+import { Model }            from 'browser-model';
+import { Post }             from './post.model';
 
+export class User extends Model {
+  _id;
+  name;
+
+  static SCHEMA = {
+    _id:{type:'string', primary:true},//this means every time you make a new object you must give it a _id
+    name:{type:'string'},
+  };
+
+  constructor(obj:object){
+    super(obj);
+  }
+
+  Post(){
+    return this.hasOne(Post, 'user_id', '_id');
+  }
+
+}
+
+export class Post extends Model {
+  _id;
+  post_name;
+
+  static SCHEMA = {
+    _id:{type:'string', primary:true},//this means every time you make a new object you must give it a _id
+    post_name:{type:'string'},
+  };
+
+  constructor(obj:object){
+    super(obj);
+  }
+  
+  User(){
+    return this.belongsTo(User, 'user_id', '_id');
+  }
+
+}
+```
+Then in the Component
+```
+ngOnInit() {
+    this.post = Post.findById(1);
+    let user = this.post.User();
+    console.log('user name', user.name);
+}
+```
 ### One to Many
 #### hasMany
 
