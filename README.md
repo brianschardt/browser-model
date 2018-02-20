@@ -36,14 +36,14 @@ npm i browser-model
     - [On Remove](#on-remove-1)
     - [On Change](#on-change-1)
     - [Custom Events](#custom-events-1)
-8. [Associations](#)
-    - [One to One](#)
-        - [hasOne](#)
-        - [belongsTo](#)
-    - [One to Many](#)
-        - [hasMany](#)
-    - [Many to Many](#)
-        - [belongsToMany](#)
+8. [Associations](#associations)
+    - [One to One](#one-to-one)
+        - [hasOne](#hasone)
+        - [belongsTo](#belongsto)
+    - [One to Many](#one-to-many)
+        - [hasMany](#hasmany)
+    - [Many to Many](#many-to-many)
+        - [belongsToMany](#belongstomany)
 
     
 ## Purpose
