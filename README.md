@@ -30,7 +30,12 @@ npm i browser-model
     - [find](#find)
     - [findOne](#findone)
     - [findOneAndUpdate](#findoneandupdate)
-    - [findById]{#findbyid)
+    - [findById](#findbyid)
+7. [Static Events & Hooks](#static-events--hooks)
+    - [On Create](#on-create)
+    - [On Remove](#on-remove-1)
+    - [On Change](#on-change-1)
+    - [Custom Events](#custom-events-1)
 
     
 ## Purpose
@@ -179,6 +184,15 @@ company.on(['added product', 'created product'], (product)=>{
     console.log('added product: ', product.name);
 });
 
+```
+
+Note: If you want the event to be thrown also as a static event add 3rd parameter as true
+```
+company.emit(['added product', 'created product'], {name:'shoes'}, true);
+
+Company.on('added product', (data)=>{
+    console.log('product added');
+});
 ```
 
 ## Static Methods
