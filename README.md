@@ -22,13 +22,7 @@ npm i browser-model
     - [On Reload](#on-reload)
     - [On Change](#on-change)
     - [Custom Events](#on-change)
-6. [Associations](#)
-    - [One to One](#)
-        - [hasOne](#)
-        - [belongsTo](#)
-    - [One to Many](#)
-    - [Many to Many](#)
-7. [Static Methods](#static-methods)
+6. [Static Methods](#static-methods)
     - [create](#create)
     - [remove](#remove-1)
     - [update](#update)
@@ -37,11 +31,19 @@ npm i browser-model
     - [findOne](#findone)
     - [findOneAndUpdate](#findoneandupdate)
     - [findById](#findbyid)
-8. [Static Events & Hooks](#static-events--hooks)
+7. [Static Events & Hooks](#static-events--hooks)
     - [On Create](#on-create)
     - [On Remove](#on-remove-1)
     - [On Change](#on-change-1)
     - [Custom Events](#custom-events-1)
+8. [Associations](#)
+    - [One to One](#)
+        - [hasOne](#)
+        - [belongsTo](#)
+    - [One to Many](#)
+        - [hasMany](#)
+    - [Many to Many](#)
+        - [belongsToMany](#)
 
     
 ## Purpose
@@ -290,3 +292,14 @@ Company.on(['added product', 'created product'], (product)=>{
     console.log('added product: ', product.name);
 });
 ```
+## Associations
+
+### One to One
+#### hasOne
+#### belongsTo
+
+### One to Many
+#### hasMany
+
+### Many to Many
+#### belongsToMany
