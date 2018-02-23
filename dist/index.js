@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var _ = require("underscore");
+var get = require("lodash.get");
 var Model = /** @class */ (function () {
     function Model(obj_data) {
         //Instance Model Events
@@ -109,7 +110,7 @@ var Model = /** @class */ (function () {
     Model.prototype.belongsToMany = function (model, foreign_key, reference_key, contains) {
         var query_obj = {};
         if (contains) {
-            var value_array = this[foreign_key];
+            var value_array = this.static.newGet(this.toObject(), foreign_key);
             var instance_array = [];
             for (var i in value_array) {
                 var value = value_array[i];
@@ -120,7 +121,8 @@ var Model = /** @class */ (function () {
             return instance_array;
         }
         else {
-            query_obj[foreign_key] = this[reference_key];
+            query_obj[foreign_key] = get(this.toObject(), reference_key);
+            console.log('User many to many', query_obj);
             return model.findArray(query_obj);
         }
     };
@@ -281,9 +283,38 @@ var Model = /** @class */ (function () {
         }
         return this.create(instance, single);
     };
+    // static find(search:object, single?:boolean){
+    //   let all_data = this.getAllData();
+    //   let instances = all_data.filter((data:object)=>{ return _.isMatch(data, search);});
+    //   let final_objs = instances;
+    //   let array = []
+    //   for (let i in final_objs){
+    //     let instance = final_objs[i];
+    //     instance = this.instantiateObject(instance, single)
+    //     array.push(instance);
+    //   }
+    //
+    //   return array;
+    // }
+    Model.search = function (search) {
+        var all_data = this.getAllData();
+        var instances = all_data.filter(function (data) {
+            var found = true;
+            var keys = _.keys(search);
+            for (var i in keys) {
+                var key = keys[i];
+                var value = search[key];
+                var nested_value = get(data, key);
+                if (nested_value != value)
+                    found = false;
+            }
+            return found;
+        });
+        return instances;
+    };
     Model.find = function (search, single) {
         var all_data = this.getAllData();
-        var instances = all_data.filter(function (data) { return _.isMatch(data, search); });
+        var instances = this.search(search);
         var final_objs = instances;
         var array = [];
         for (var i in final_objs) {
@@ -300,7 +331,7 @@ var Model = /** @class */ (function () {
             instance = all_data[0];
         }
         else {
-            instance = all_data.filter(function (data) { return _.isMatch(data, search); })[0];
+            instance = this.search(search)[0];
         }
         if (typeof instance === 'undefined' || !instance)
             return null;
@@ -308,11 +339,14 @@ var Model = /** @class */ (function () {
         return instance;
     };
     Model.findArray = function (search, single) {
+        var _this = this;
         var all_data = this.getAllData();
         var key = _.keys(search)[0];
         var value = search[key];
+        console.log('key', key, 'value', value);
         var instances = all_data.filter(function (data) {
-            return data[key].includes(value);
+            var nested_value = _this.newGet(data, key);
+            return nested_value.length > 0;
         });
         var final_objs = instances;
         var array = [];
@@ -324,6 +358,7 @@ var Model = /** @class */ (function () {
         return array;
     };
     Model.findOneArray = function (search, single) {
+        var _this = this;
         var all_data = this.getAllData();
         var instance;
         if (!search) {
@@ -331,10 +366,11 @@ var Model = /** @class */ (function () {
         }
         else {
             var key_1 = _.keys(search)[0];
-            var value_1 = search[key_1];
+            var value = search[key_1];
             instance = all_data.filter(function (data) {
-                return data[key_1].includes(value_1)[0];
-            });
+                var nested_value = _this.newGet(data, key_1);
+                return nested_value.length > 0;
+            })[0];
         }
         if (typeof instance === 'undefined' || !instance)
             return null;
@@ -378,6 +414,57 @@ var Model = /** @class */ (function () {
                 result : result.concat(key);
         }, []);
         return diff;
+    };
+    Model.newGet = function (obj, str) {
+        var keys = str.split("."); // split on dot notation
+        var check_array = [];
+        for (var i in keys) {
+            var check_str = void 0;
+            var key = keys[i];
+            var em_check_array = [];
+            if (check_array.length <= 0) {
+                em_check_array.push(get(obj, key));
+            }
+            else {
+                for (var z in check_array) {
+                    var local_str = check_array[z];
+                    check_str = local_str + '.' + key;
+                    em_check_array.push(get(obj, check_str));
+                }
+            }
+            for (var t in em_check_array) {
+                var check = em_check_array[t];
+                if (_.isArray(check)) {
+                    var len = check.length;
+                    for (var o = 0; o < len; o++) {
+                        if (check_array.length <= 0) {
+                            check_array.push(key + '[' + o + ']');
+                        }
+                        else {
+                            for (var p in check_array) {
+                                check_array[p] += '.' + key + '[' + o + ']';
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (check_array.length <= 0) {
+                        check_array.push(key);
+                    }
+                    else {
+                        for (var o in check_array) {
+                            check_array[o] = check_array[o] + '.' + key;
+                        }
+                    }
+                }
+            }
+        }
+        var values = [];
+        for (var i in check_array) {
+            var check = check_array[i];
+            values.push(get(obj, check));
+        }
+        return values;
     };
     Model.on = function (events, listener) {
         var _this = this;

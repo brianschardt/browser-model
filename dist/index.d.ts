@@ -40,6 +40,7 @@ export declare class Model {
     static remove(search: object): void;
     static update(search: object, new_data?: any, single?: boolean): null | undefined;
     static updateOne(search: object, new_data: any, single?: boolean): any;
+    static search(search: any): any;
     static find(search: object, single?: boolean): any[];
     static findOne(search?: object, single?: boolean): any;
     static findArray(search: any, single?: boolean): any[];
@@ -47,6 +48,7 @@ export declare class Model {
     static findOneAndUpdate(search: object, data?: any, options?: any): any;
     static findById(id: string, single?: boolean): any;
     static difference(a: any, b: any): any;
+    static newGet(obj: object, str: string): any[];
     static _events: any;
     static on(events: any, listener?: Function): (() => void) | undefined;
     static emit(events: any, data?: any): void;

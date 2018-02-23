@@ -1,4 +1,5 @@
 import * as _ from 'underscore';
+import get = require('lodash.get');
 
 export class Model{
 
@@ -13,7 +14,6 @@ export class Model{
     getModelName(){
         return this.static.getModelName();
     }
-
 
     toObject(){
         let properties = Object.getOwnPropertyNames(this);
@@ -127,12 +127,15 @@ export class Model{
         return model.find(query_obj);
     }
 
+
+
     belongsToMany(model:any, foreign_key:any, reference_key:any, contains?:boolean){
         let query_obj:any = {};
         if(contains){
 
-            let value_array = (<any> this)[foreign_key];
+            let value_array = this.static.newGet(this.toObject(), foreign_key);
             let instance_array:Array<string> = [];
+
             for (let i in value_array){
                 let value = value_array[i];
                 query_obj[reference_key] = value;
@@ -143,7 +146,8 @@ export class Model{
             return instance_array;
 
         }else{
-            query_obj[foreign_key] = (<any> this)[reference_key];
+            query_obj[foreign_key] = get(this.toObject(), reference_key);
+            console.log('User many to many',query_obj);
             return model.findArray(query_obj);
         }
 
@@ -344,9 +348,45 @@ export class Model{
     }
 
 
+    // static find(search:object, single?:boolean){
+    //   let all_data = this.getAllData();
+    //   let instances = all_data.filter((data:object)=>{ return _.isMatch(data, search);});
+    //   let final_objs = instances;
+    //   let array = []
+    //   for (let i in final_objs){
+    //     let instance = final_objs[i];
+    //     instance = this.instantiateObject(instance, single)
+    //     array.push(instance);
+    //   }
+    //
+    //   return array;
+    // }
+
+    static search(search:any){
+        let all_data = this.getAllData();
+
+        let instances = all_data.filter((data:object)=>{
+            let found = true;
+            let keys = _.keys(search);
+            for (let i in keys){
+                let key = keys[i];
+                let value = search[key];
+
+                let nested_value = get(data, key);
+                if(nested_value!=value) found = false;
+
+            }
+            return found;
+        });
+
+        return instances;
+    }
+
     static find(search:object, single?:boolean){
         let all_data = this.getAllData();
-        let instances = all_data.filter((data:object)=>{ return _.isMatch(data, search);});
+
+        let instances = this.search(search);
+
         let final_objs = instances;
         let array = []
         for (let i in final_objs){
@@ -364,7 +404,7 @@ export class Model{
         if(!search){
             instance = all_data[0];
         }else{
-            instance = all_data.filter((data:object)=>{ return _.isMatch(data, search);})[0];
+            instance = this.search(search)[0];
         }
         if(typeof instance === 'undefined' || !instance) return null;
 
@@ -376,8 +416,10 @@ export class Model{
         let all_data = this.getAllData();
         let key = _.keys(search)[0];
         let value = search[key];
+        console.log('key', key, 'value', value);
         let instances = all_data.filter((data:any)=>{
-            return data[key].includes(value);
+            let nested_value = this.newGet(data, key);
+            return nested_value.length>0;
         });
 
         let final_objs = instances;
@@ -399,9 +441,11 @@ export class Model{
         }else{
             let key = _.keys(search)[0];
             let value = search[key];
+
             instance = all_data.filter((data:any)=>{
-                return data[key].includes(value)[0];
-            });
+                let nested_value = this.newGet(data, key);
+                return nested_value.length>0;
+            })[0];
         }
         if(typeof instance === 'undefined' || !instance) return null;
 
@@ -445,6 +489,66 @@ export class Model{
         return diff;
     }
 
+    static newGet(obj:object, str:string)
+    {
+        var keys = str.split(".") // split on dot notation
+
+        var check_array:Array<any> = [];
+
+        for(var i in keys)
+        {
+            let check_str:any;
+            let key:any = (<any> keys)[i];
+            let em_check_array=[];
+
+            if(check_array.length<=0){
+                em_check_array.push(get(obj, key));
+            }else{
+                for (let z in check_array ){
+                    let local_str = check_array[z];
+                    check_str = local_str+'.'+key;
+                    em_check_array.push(get(obj, check_str));
+                }
+
+            }
+
+            for(var t in em_check_array){
+                let check = em_check_array[t];
+
+                if(_.isArray(check)){
+                    let len = check.length;
+                    for (let o = 0; o<len;o++){
+                        if(check_array.length<=0) {
+                            check_array.push(key+'['+o+']');
+                        }else{
+                            for(let p in check_array){
+                                check_array[p] += '.'+key+'['+o+']';
+                            }
+                        }
+
+                    }
+                }else{
+                    if(check_array.length<=0) {
+                        check_array.push(key);
+                    }else{
+                        for (let o in check_array){
+                            check_array[o] = check_array[o]+'.'+key
+                        }
+
+                    }
+                }
+
+            }
+        }
+
+        let values = [];
+        for (var i in check_array){
+            let check = check_array[i];
+            values.push(get(obj, check));
+        }
+
+        return values
+    }
     //**********************************************************
     //************* EVENTS *************************************
     //**********************************************************
