@@ -201,13 +201,16 @@ var Model = /** @class */ (function () {
     };
     //singe means that this object does not share a data reference to anywhere else
     Model.instantiateObject = function (obj_data, single) {
+        var _this = this;
         var obj;
         if (typeof single !== "undefined" && single === true) {
             obj = new this(obj_data);
             return obj;
         }
         var primary_key = this.getPrimaryKey();
-        obj = this._instances.filter(function (instance) { return instance[primary_key] === obj_data[primary_key]; })[0];
+        obj = this._instances.filter(function (instance) {
+            return instance[primary_key] === obj_data[primary_key] && instance instanceof _this;
+        })[0];
         if (!obj) {
             obj = new this(obj_data);
             this._instances.push(obj);
@@ -385,10 +388,10 @@ var Model = /** @class */ (function () {
         if (!instance) {
             if (typeof options === 'object' && options.upsert === true) {
                 if (_.isEmpty(data)) {
-                    final_obj = this.create(search, options.single);
+                    instance = this.create(search, options.single);
                 }
                 else {
-                    final_obj = this.create(data, options.single);
+                    instance = this.create(data, options.single);
                 }
             }
             else {
@@ -396,9 +399,9 @@ var Model = /** @class */ (function () {
             }
         }
         else {
-            final_obj = this.updateOne(search, data, options.single);
+            instance = this.updateOne(search, data, options.single);
         }
-        return final_obj;
+        return instance;
     };
     Model.findById = function (id, single) {
         var primary_key = this.getPrimaryKey();

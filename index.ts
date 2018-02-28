@@ -251,7 +251,9 @@ export class Model{
         }
 
         let primary_key = this.getPrimaryKey();
-        obj = this._instances.filter((instance:any)=>instance[primary_key] === obj_data[primary_key])[0];
+        obj = this._instances.filter((instance:any)=>{
+            return instance[primary_key] === obj_data[primary_key] && instance instanceof this
+        })[0];
 
         if(!obj){
             obj =  new this(obj_data);
@@ -334,15 +336,18 @@ export class Model{
     }
 
     static updateOne(search:object, new_data:any, single?:boolean){
+
         let all_data:any = this.getAllData();
         let instance:any = all_data.filter((data:any)=>{ return _.isMatch(data, search)})[0];
         if(!instance){
             return null;
         }
+
         this.remove(search);
         for (let o in new_data){
             instance[o] = new_data[o]
         }
+
         return this.create(instance, single);
     }
 
@@ -459,17 +464,17 @@ export class Model{
         if(!instance){
             if(typeof options === 'object' && options.upsert === true){
                 if(_.isEmpty(data)){
-                    final_obj = this.create(search, options.single);
+                    instance = this.create(search, options.single);
                 }else{
-                    final_obj = this.create(data, options.single);
+                    instance = this.create(data, options.single);
                 }
             }else{
                 null;
             }
         }else{
-            final_obj = this.updateOne(search, data, options.single)
+            instance = this.updateOne(search, data, options.single)
         }
-        return final_obj;
+        return instance;
     }
 
     static findById(id:string, single?:boolean){
