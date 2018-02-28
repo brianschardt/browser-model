@@ -122,7 +122,6 @@ var Model = /** @class */ (function () {
         }
         else {
             query_obj[foreign_key] = get(this.toObject(), reference_key);
-            console.log('User many to many', query_obj);
             return model.findArray(query_obj);
         }
     };
@@ -343,7 +342,6 @@ var Model = /** @class */ (function () {
         var all_data = this.getAllData();
         var key = _.keys(search)[0];
         var value = search[key];
-        console.log('key', key, 'value', value);
         var instances = all_data.filter(function (data) {
             var nested_value = _this.newGet(data, key);
             return nested_value.length > 0;

@@ -147,7 +147,6 @@ export class Model{
 
         }else{
             query_obj[foreign_key] = get(this.toObject(), reference_key);
-            console.log('User many to many',query_obj);
             return model.findArray(query_obj);
         }
 
@@ -416,7 +415,6 @@ export class Model{
         let all_data = this.getAllData();
         let key = _.keys(search)[0];
         let value = search[key];
-        console.log('key', key, 'value', value);
         let instances = all_data.filter((data:any)=>{
             let nested_value = this.newGet(data, key);
             return nested_value.length>0;
