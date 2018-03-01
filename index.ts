@@ -459,7 +459,8 @@ export class Model{
     }
 
     static findOneAndUpdate(search:object, data?:any, options?:any){
-        if(typeof search !== 'object'){ console.log('search wrong') }
+        if(typeof search !== 'object') throw Error(`No search query given in ${this.getModelName()} model`);
+
         let all_data = this.getAllData();
         let instance = all_data.filter((data:object)=>{ return _.isMatch(data, search);})[0];
         let final_obj = instance;
@@ -471,12 +472,20 @@ export class Model{
                     instance = this.create(data, options.single);
                 }
             }else{
-                null;
+                instance = null;
             }
         }else{
             instance = this.updateOne(search, data, options.single)
         }
         return instance;
+    }
+
+    static createOrUpdate(search:object){
+        let primary_key = this.getPrimaryKey();
+        let value:any = (<any> search)[primary_key];
+        let query_obj:any = {};
+        query_obj[primary_key] = value;
+        return this.findOneAndUpdate(query_obj, search, {upsert:true});
     }
 
     static findById(id:string, single?:boolean){

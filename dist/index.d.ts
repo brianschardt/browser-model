@@ -46,6 +46,7 @@ export declare class Model {
     static findArray(search: any, single?: boolean): any[];
     static findOneArray(search?: any, single?: boolean): any;
     static findOneAndUpdate(search: object, data?: any, options?: any): any;
+    static createOrUpdate(search: object): any;
     static findById(id: string, single?: boolean): any;
     static difference(a: any, b: any): any;
     static newGet(obj: object, str: string): any[];

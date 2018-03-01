@@ -384,9 +384,8 @@ var Model = /** @class */ (function () {
         return instance;
     };
     Model.findOneAndUpdate = function (search, data, options) {
-        if (typeof search !== 'object') {
-            console.log('search wrong');
-        }
+        if (typeof search !== 'object')
+            throw Error("No search query given in " + this.getModelName() + " model");
         var all_data = this.getAllData();
         var instance = all_data.filter(function (data) { return _.isMatch(data, search); })[0];
         var final_obj = instance;
@@ -400,13 +399,20 @@ var Model = /** @class */ (function () {
                 }
             }
             else {
-                null;
+                instance = null;
             }
         }
         else {
             instance = this.updateOne(search, data, options.single);
         }
         return instance;
+    };
+    Model.createOrUpdate = function (search) {
+        var primary_key = this.getPrimaryKey();
+        var value = search[primary_key];
+        var query_obj = {};
+        query_obj[primary_key] = value;
+        return this.findOneAndUpdate(query_obj, search, { upsert: true });
     };
     Model.findById = function (id, single) {
         var primary_key = this.getPrimaryKey();
