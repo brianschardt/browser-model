@@ -125,6 +125,9 @@ var Model = /** @class */ (function () {
             return model.findArray(query_obj);
         }
     };
+    //***************************************
+    //*********** STATIC ********************
+    //***************************************
     Model.describe = function () {
         var properties = Object.getOwnPropertyNames(this);
         properties = properties.splice(3);
@@ -203,6 +206,8 @@ var Model = /** @class */ (function () {
     Model.instantiateObject = function (obj_data, single) {
         var _this = this;
         var obj;
+        if (!this._instances)
+            this._instances = [];
         if (typeof single !== "undefined" && single === true) {
             obj = new this(obj_data);
             return obj;
@@ -424,13 +429,21 @@ var Model = /** @class */ (function () {
             var key = keys[i];
             var em_check_array = [];
             if (check_array.length <= 0) {
+                var t_1 = get(obj, key);
                 em_check_array.push(get(obj, key));
             }
             else {
                 for (var z in check_array) {
                     var local_str = check_array[z];
                     check_str = local_str + '.' + key;
-                    em_check_array.push(get(obj, check_str));
+                    var t_2 = get(obj, check_str);
+                    if (_.isArray(t_2)) {
+                        em_check_array.push(get(obj, check_str));
+                    }
+                    else {
+                        em_check_array.push(get(obj, check_str));
+                        break;
+                    }
                 }
             }
             for (var t in em_check_array) {
@@ -438,14 +451,7 @@ var Model = /** @class */ (function () {
                 if (_.isArray(check)) {
                     var len = check.length;
                     for (var o = 0; o < len; o++) {
-                        if (check_array.length <= 0) {
-                            check_array.push(key + '[' + o + ']');
-                        }
-                        else {
-                            for (var p in check_array) {
-                                check_array[p] += '.' + key + '[' + o + ']';
-                            }
-                        }
+                        check_array.push(key + '[' + o + ']');
                     }
                 }
                 else {
@@ -469,6 +475,8 @@ var Model = /** @class */ (function () {
     };
     Model.on = function (events, listener) {
         var _this = this;
+        if (!this._events)
+            this._events = {};
         if (typeof events === 'string') {
             if (!this._events[events])
                 this._events[events] = [];
@@ -488,6 +496,8 @@ var Model = /** @class */ (function () {
         }
     };
     Model.emit = function (events, data) {
+        if (!this._events)
+            this._events = {};
         if (typeof events === 'string') {
             var event_listeners = this._events[events];
             if (event_listeners)
@@ -538,16 +548,6 @@ var Model = /** @class */ (function () {
         if (toStatic)
             this.static.emit(events, data); //this will send it to the whole class events
     };
-    //***************************************
-    //*********** STATIC ********************
-    //***************************************
-    Model._instances = [];
-    //**********************************************************
-    //************* EVENTS *************************************
-    //**********************************************************
-    //Global Model Events
-    //events are change, create, remove
-    Model._events = {};
     return Model;
 }());
 exports.Model = Model;

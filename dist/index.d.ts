@@ -1,5 +1,6 @@
 export declare class Model {
     static model_name: string;
+    static _instances: Array<Model>;
     static all_data: Array<object>;
     static SCHEMA: Object;
     constructor(obj_data: any);
@@ -21,7 +22,6 @@ export declare class Model {
     hasOne(model: any, foreign_key: any, reference_key: any): any;
     hasMany(model: any, foreign_key: any, reference_key: any): any;
     belongsToMany(model: any, foreign_key: any, reference_key: any, contains?: boolean): any;
-    static _instances: Array<Model>;
     static describe(): Array<string>;
     static setlocalStorage(name: string, data: Object): void;
     static getlocalStorage(name: string): Object;

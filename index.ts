@@ -4,6 +4,7 @@ import get = require('lodash.get');
 export class Model{
 
     public static model_name:string;
+    static _instances: Array<Model>;
     public static all_data:Array<object>;
     public static SCHEMA:Object;
 
@@ -156,7 +157,6 @@ export class Model{
     //***************************************
     //*********** STATIC ********************
     //***************************************
-    static _instances: Array<Model> = [];
 
     static describe(): Array<string> {
         let properties = Object.getOwnPropertyNames(this);
@@ -244,7 +244,9 @@ export class Model{
 
     //singe means that this object does not share a data reference to anywhere else
     static instantiateObject(obj_data:any, single?:boolean){//this gets it so the object has the same reference and thus data in components
-        let obj:any
+        let obj:any;
+        if(!this._instances) this._instances = [];
+
         if(typeof single !== "undefined" && single === true){
             obj =  new this(obj_data);
             return obj
@@ -558,9 +560,11 @@ export class Model{
 
     //Global Model Events
     //events are change, create, remove
-    static _events:any = {};
+    static _events:any;
 
     static on(events:any, listener?:Function){
+        if(!this._events) this._events = {};
+
         if(typeof events === 'string'){
             if(!this._events[events]) this._events[events] = [];
 
@@ -582,6 +586,8 @@ export class Model{
     }
 
     static emit(events:any, data?:any){
+        if(!this._events) this._events = {};
+
         if(typeof events === 'string'){
             let event_listeners = this._events[events];
             if(event_listeners) event_listeners.forEach((listener: any) => listener(data));
