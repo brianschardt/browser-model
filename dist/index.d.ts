@@ -38,7 +38,7 @@ export declare class Model {
     static removeInstance(search: object): void;
     static removeStorage(search: object): void;
     static remove(search: object): void;
-    static update(search: object, new_data?: any, single?: boolean): null | undefined;
+    static update(search: object, new_data?: any, single?: boolean): any[] | null;
     static updateOne(search: object, new_data: any, single?: boolean): any;
     static search(search: any): any;
     static find(search: object, single?: boolean): any[];

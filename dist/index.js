@@ -270,39 +270,34 @@ var Model = /** @class */ (function () {
             return null;
         }
         this.remove(search);
+        var array = [];
         for (var i in instances) {
             var instance = instances[i];
-            for (var o in new_data) {
-                instance[o] = new_data[o];
-            }
-            this.create(instance, single);
+            var primary = this.getPrimaryKey();
+            var query_obj = {};
+            query_obj[primary] = instance[primary];
+            var r_instance = this.updateOne(query_obj, new_data, single);
+            array.push(r_instance);
         }
+        return array;
     };
     Model.updateOne = function (search, new_data, single) {
         var all_data = this.getAllData();
         var instance = all_data.filter(function (data) { return _.isMatch(data, search); })[0];
-        if (!instance) {
+        if (!instance)
             return null;
-        }
         this.remove(search);
         for (var o in new_data) {
             instance[o] = new_data[o];
         }
-        return this.create(instance, single);
+        var new_i = this.create(instance, single);
+        var obj = new_i.toObject();
+        for (var i in obj) {
+            var val = obj[i];
+            new_i[i] = new_data[i];
+        }
+        return new_i;
     };
-    // static find(search:object, single?:boolean){
-    //   let all_data = this.getAllData();
-    //   let instances = all_data.filter((data:object)=>{ return _.isMatch(data, search);});
-    //   let final_objs = instances;
-    //   let array = []
-    //   for (let i in final_objs){
-    //     let instance = final_objs[i];
-    //     instance = this.instantiateObject(instance, single)
-    //     array.push(instance);
-    //   }
-    //
-    //   return array;
-    // }
     Model.search = function (search) {
         var all_data = this.getAllData();
         var instances = all_data.filter(function (data) {
@@ -412,7 +407,8 @@ var Model = /** @class */ (function () {
         var value = search[primary_key];
         var query_obj = {};
         query_obj[primary_key] = value;
-        return this.findOneAndUpdate(query_obj, search, { upsert: true });
+        var new_i = this.findOneAndUpdate(query_obj, search, { upsert: true });
+        return new_i;
     };
     Model.findById = function (id, single) {
         var primary_key = this.getPrimaryKey();

@@ -327,46 +327,40 @@ export class Model{
         }
 
         this.remove(search);
+        let array = [];
         for( let i in instances){
             let instance:any = instances[i];
-            for (let o in new_data){
-                instance[o] = new_data[o]
-            }
-            this.create(instance, single);
+            let primary = this.getPrimaryKey();
+            let query_obj:any ={};
+            query_obj[primary] = (<any> instance)[primary];
+            let r_instance = this.updateOne(query_obj, new_data, single);
+            array.push(r_instance);
         }
 
+        return array;
     }
 
     static updateOne(search:object, new_data:any, single?:boolean){
 
         let all_data:any = this.getAllData();
         let instance:any = all_data.filter((data:any)=>{ return _.isMatch(data, search)})[0];
-        if(!instance){
-            return null;
-        }
+        if(!instance) return null;
 
         this.remove(search);
         for (let o in new_data){
-            instance[o] = new_data[o]
+            instance[o] = new_data[o];
         }
 
-        return this.create(instance, single);
+
+        let new_i = this.create(instance, single);
+        let obj = new_i.toObject();
+        for(let i in obj){
+            let val = obj[i];
+            new_i[i] = new_data[i];
+        }
+
+        return new_i;
     }
-
-
-    // static find(search:object, single?:boolean){
-    //   let all_data = this.getAllData();
-    //   let instances = all_data.filter((data:object)=>{ return _.isMatch(data, search);});
-    //   let final_objs = instances;
-    //   let array = []
-    //   for (let i in final_objs){
-    //     let instance = final_objs[i];
-    //     instance = this.instantiateObject(instance, single)
-    //     array.push(instance);
-    //   }
-    //
-    //   return array;
-    // }
 
     static search(search:any){
         let all_data = this.getAllData();
@@ -477,6 +471,7 @@ export class Model{
         }else{
             instance = this.updateOne(search, data, options.single)
         }
+
         return instance;
     }
 
@@ -485,7 +480,8 @@ export class Model{
         let value:any = (<any> search)[primary_key];
         let query_obj:any = {};
         query_obj[primary_key] = value;
-        return this.findOneAndUpdate(query_obj, search, {upsert:true});
+        let new_i = this.findOneAndUpdate(query_obj, search, {upsert:true});
+        return new_i
     }
 
     static findById(id:string, single?:boolean){
