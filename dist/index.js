@@ -292,9 +292,11 @@ var Model = /** @class */ (function () {
         }
         var new_i = this.create(instance, single);
         var obj = new_i.toObject();
-        for (var i in obj) {
-            var val = obj[i];
-            new_i[i] = new_data[i];
+        var schema = this.getSchema();
+        for (var i in new_data) {
+            if (schema[i]) {
+                new_i[i] = new_data[i];
+            }
         }
         return new_i;
     };

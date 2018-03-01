@@ -354,10 +354,14 @@ export class Model{
 
         let new_i = this.create(instance, single);
         let obj = new_i.toObject();
-        for(let i in obj){
-            let val = obj[i];
-            new_i[i] = new_data[i];
+
+        let schema = this.getSchema();
+        for(let i in new_data){
+            if(schema[i]){
+                new_i[i] = new_data[i];
+            }
         }
+
 
         return new_i;
     }
