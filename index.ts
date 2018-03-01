@@ -134,12 +134,12 @@ export class Model{
         if(contains){
 
             let value_array = this.static.newGet(this.toObject(), foreign_key);
-            let instance_array:Array<string> = [];
+            let instance_array:Array<any> = [];
 
             for (let i in value_array){
                 let value = value_array[i];
                 query_obj[reference_key] = value;
-                let instances = model.find(query_obj)
+                let instances = model.find(query_obj);
                 instance_array = instance_array.concat(instances)
             }
 
@@ -505,32 +505,32 @@ export class Model{
             let em_check_array=[];
 
             if(check_array.length<=0){
+                let t = get(obj, key);
                 em_check_array.push(get(obj, key));
             }else{
                 for (let z in check_array ){
                     let local_str = check_array[z];
                     check_str = local_str+'.'+key;
-                    em_check_array.push(get(obj, check_str));
+                    let t = get(obj, check_str);
+                    if(_.isArray(t)){
+                        em_check_array.push(get(obj, check_str));
+                    }else{
+                        em_check_array.push(get(obj, check_str));
+                        break;
+                    }
                 }
 
             }
 
             for(var t in em_check_array){
                 let check = em_check_array[t];
-
                 if(_.isArray(check)){
                     let len = check.length;
                     for (let o = 0; o<len;o++){
-                        if(check_array.length<=0) {
-                            check_array.push(key+'['+o+']');
-                        }else{
-                            for(let p in check_array){
-                                check_array[p] += '.'+key+'['+o+']';
-                            }
-                        }
-
+                        check_array.push(key+'['+o+']');
                     }
                 }else{
+
                     if(check_array.length<=0) {
                         check_array.push(key);
                     }else{
