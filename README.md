@@ -8,22 +8,24 @@ npm i browser-model
 
 ## Doc Menu
 1. [Purpose](#purpose)
-2. [Example Model](#example-model)
-3. [Example Component](#example-component)
-4. [Instance Methods](#instance-methods)
+2. [Getting Started](#getting-started)
+3. [Example Model](#example-model)
+4. [Example Component](#example-component)
+5. [Instance Methods](#instance-methods)
     - [save](#save)
     - [remove](#remove)
     - [toObject](#toobject)
     - [reload](#reload)
     - [Storage Differences](#storage-and-instance-differences)
-5. [Instance Hooks & Events](#instance-events--hooks)
+6. [Instance Hooks & Events](#instance-events--hooks)
     - [On Save](#on-save)
     - [On Remove](#on-remove)
     - [On Reload](#on-reload)
     - [On Change](#on-change)
     - [Custom Events](#on-change)
-6. [Static Methods](#static-methods)
+7. [Static Methods](#static-methods)
     - [create](#create)
+    - [createOrUpdate](#createorupdate)
     - [remove](#remove-1)
     - [update](#update)
     - [updateOne](#updateone)
@@ -31,12 +33,12 @@ npm i browser-model
     - [findOne](#findone)
     - [findOneAndUpdate](#findoneandupdate)
     - [findById](#findbyid)
-7. [Static Events & Hooks](#static-events--hooks)
+8. [Static Events & Hooks](#static-events--hooks)
     - [On Create](#on-create)
     - [On Remove](#on-remove-1)
     - [On Change](#on-change-1)
     - [Custom Events](#custom-events-1)
-8. [Associations](#associations)
+9. [Associations](#associations)
     - [One to One](#one-to-one)
         - [hasOne](#hasone)
         - [belongsTo](#belongsto)
@@ -53,6 +55,14 @@ This package may actually work with react. TBD
 
 If you refresh the browser the data still exists inside, and is easily retrievable. Pretty awesome!
 
+### Getting Started
+The standard way of getting set up is to create a directory called: models
+Then lets say I have user data, and post data.
+I create 2 files in the models directory called
+1. user.model.ts
+2. post.model.ts
+
+My user model looks like:
 ### Example Model
 ```
 import { Model } from 'browser-model';
@@ -208,6 +218,11 @@ Company.on('added product', (data)=>{
 creates new Instance of model
 ```
 let company = Company.create({name:'google', value:'600'})
+```
+### createOrUpdate
+This will either create a new instance using the data, or given a primary key will update an already existing model with that key and return the corresponding instance.
+```
+let company = Company.createOrUpdate({id:4, name:'google', value:'600'})
 ```
 ### remove
 Removes all instances with the given value from web storage
