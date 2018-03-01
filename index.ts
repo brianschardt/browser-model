@@ -605,7 +605,7 @@ export class Model{
     _events:any = {};
 
     on(events:any, listener?:Function){
-        if(events === 'string'){
+        if(typeof events === 'string'){
             if(!this._events[events]) this._events[events] = [];
 
             this._events[events].push(listener);
