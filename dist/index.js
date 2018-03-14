@@ -496,7 +496,12 @@ var Model = /** @class */ (function () {
                     this._events[event_1] = [];
                 this._events[event_1].push(listener);
             }
-            return;
+            return function () {
+                for (var _i = 0, events_1 = events; _i < events_1.length; _i++) {
+                    var event_2 = events_1[_i];
+                    _this._events[event_2] = _this._events[event_2].filter(function (l) { return l !== listener; });
+                }
+            };
         }
     };
     Model.emit = function (events, data) {
@@ -528,11 +533,17 @@ var Model = /** @class */ (function () {
         }
         else {
             for (var i in events) {
-                var event_2 = events[i];
-                if (!this._events[event_2])
-                    this._events[event_2] = [];
-                this._events[event_2].push(listener);
+                var event_3 = events[i];
+                if (!this._events[event_3])
+                    this._events[event_3] = [];
+                this._events[event_3].push(listener);
             }
+            return function () {
+                for (var _i = 0, events_2 = events; _i < events_2.length; _i++) {
+                    var event_4 = events_2[_i];
+                    _this._events[event_4] = _this._events[event_4].filter(function (l) { return l !== listener; });
+                }
+            };
         }
     };
     Model.prototype.emit = function (events, data, toStatic) {

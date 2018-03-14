@@ -51,9 +51,9 @@ export declare class Model {
     static difference(a: any, b: any): any;
     static newGet(obj: object, str: string): any[];
     static _events: any;
-    static on(events: any, listener?: Function): (() => void) | undefined;
+    static on(events: any, listener?: Function): () => void;
     static emit(events: any, data?: any): void;
     _events: any;
-    on(events: any, listener?: Function): (() => void) | undefined;
+    on(events: any, listener?: Function): () => void;
     emit(events: any, data?: any, toStatic?: boolean): void;
 }

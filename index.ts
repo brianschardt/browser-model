@@ -590,7 +590,11 @@ export class Model{
                 this._events[event].push(listener);
             }
 
-            return
+            return ()=>{
+                for(let event of events){
+                    this._events[event] = this._events[event].filter((l:any) => l !== listener)
+                }
+            }
         }
     }
 
@@ -629,6 +633,13 @@ export class Model{
 
                 this._events[event].push(listener);
             }
+
+            return ()=>{
+                for(let event of events){
+                    this._events[event] = this._events[event].filter((l:any) => l !== listener)
+                }
+            }
+
         }
     }
 
